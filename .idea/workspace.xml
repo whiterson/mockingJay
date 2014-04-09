@@ -2,13 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="959b5168-31d5-4cac-870c-79cdb1e4ad9c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/engine.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/game.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphics.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/maps.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/GameAIFinalProject.iml" afterPath="$PROJECT_DIR$/.idea/GameAIFinalProject.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/engine.py" afterPath="$PROJECT_DIR$/engine.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/game.py" afterPath="$PROJECT_DIR$/game.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/maps.py" afterPath="$PROJECT_DIR$/maps.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="GameAIFinalProject.iws" />
@@ -35,9 +32,10 @@
       <file leaf-file-name="main.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="19" column="0" selection-start="233" selection-end="328" vertical-scroll-proportion="0.0" vertical-offset="148" max-vertical-offset="595">
+            <state line="21" column="0" selection-start="285" selection-end="285" vertical-scroll-proportion="0.0" vertical-offset="165" max-vertical-offset="663">
               <folding>
-                <element signature="e#23#33#0" expanded="true" />
+                <element signature="e#66#76#0" expanded="true" />
+                <marker date="1397016885436" expanded="true" signature="23:64" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
               </folding>
             </state>
           </provider>
@@ -46,7 +44,7 @@
       <file leaf-file-name="engine.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/engine.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="0" selection-start="470" selection-end="470" vertical-scroll-proportion="0.0" vertical-offset="199" max-vertical-offset="629">
+            <state line="36" column="0" selection-start="764" selection-end="764" vertical-scroll-proportion="0.0" vertical-offset="284" max-vertical-offset="731">
               <folding>
                 <element signature="e#23#36#0" expanded="true" />
               </folding>
@@ -57,25 +55,25 @@
       <file leaf-file-name="game.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/game.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="0" selection-start="23" selection-end="23" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="323">
+            <state line="13" column="9" selection-start="382" selection-end="382" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="374">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="maps.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="maps.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/maps.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="12" column="11" selection-start="155" selection-end="155" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="323">
+            <state line="9" column="11" selection-start="141" selection-end="141" vertical-scroll-proportion="0.38636363" vertical-offset="0" max-vertical-offset="396">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="graphics.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="graphics.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/graphics.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="35" column="23" selection-start="1223" selection-end="1223" vertical-scroll-proportion="1.4722222" vertical-offset="12" max-vertical-offset="714">
+            <state line="36" column="19" selection-start="1243" selection-end="1243" vertical-scroll-proportion="0.0" vertical-offset="267" max-vertical-offset="714">
               <folding />
             </state>
           </provider>
@@ -99,11 +97,11 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/maps.py" />
-        <option value="$PROJECT_DIR$/main.py" />
         <option value="$PROJECT_DIR$/graphics.py" />
-        <option value="$PROJECT_DIR$/engine.py" />
+        <option value="$PROJECT_DIR$/main.py" />
         <option value="$PROJECT_DIR$/game.py" />
+        <option value="$PROJECT_DIR$/engine.py" />
+        <option value="$PROJECT_DIR$/maps.py" />
       </list>
     </option>
   </component>
@@ -345,17 +343,23 @@
       <created>1396534952087</created>
       <updated>1396534952087</updated>
     </task>
+    <task id="LOCAL-00001" summary="Added a skeletal structure for the game. Mocked up some basic drawing code. Almost certainly won't work though.">
+      <created>1397016820713</created>
+      <updated>1397016820713</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1320" height="784" extended-state="6" />
     <editor active="false" />
     <layout>
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19516003" sideWeight="0.6709062" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19516003" sideWeight="0.6709062" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
@@ -377,6 +381,8 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
+    <MESSAGE value="Added a skeletal structure for the game. Mocked up some basic drawing code. Almost certainly won't work though." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added a skeletal structure for the game. Mocked up some basic drawing code. Almost certainly won't work though." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -386,7 +392,8 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="14" column="36" selection-start="216" selection-end="216" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="612">
           <folding>
-            <element signature="e#23#33#0" expanded="true" />
+            <element signature="e#66#76#0" expanded="true" />
+            <marker date="1397016885436" expanded="true" signature="23:64" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
           </folding>
         </state>
       </provider>
@@ -418,7 +425,8 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="30" column="23" selection-start="645" selection-end="645" vertical-scroll-proportion="0.0" vertical-offset="187" max-vertical-offset="612">
           <folding>
-            <element signature="e#23#33#0" expanded="true" />
+            <element signature="e#66#76#0" expanded="true" />
+            <marker date="1397016885436" expanded="true" signature="23:64" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
           </folding>
         </state>
       </provider>
@@ -433,25 +441,19 @@
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="408" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/maps.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="11" selection-start="155" selection-end="155" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="323">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="0" selection-start="233" selection-end="328" vertical-scroll-proportion="0.0" vertical-offset="148" max-vertical-offset="595">
+        <state line="21" column="0" selection-start="285" selection-end="285" vertical-scroll-proportion="0.0" vertical-offset="165" max-vertical-offset="663">
           <folding>
-            <element signature="e#23#33#0" expanded="true" />
+            <element signature="e#66#76#0" expanded="true" />
+            <marker date="1397016885436" expanded="true" signature="23:64" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/engine.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="0" selection-start="470" selection-end="470" vertical-scroll-proportion="0.0" vertical-offset="199" max-vertical-offset="629">
+        <state line="36" column="0" selection-start="764" selection-end="764" vertical-scroll-proportion="0.0" vertical-offset="284" max-vertical-offset="731">
           <folding>
             <element signature="e#23#36#0" expanded="true" />
           </folding>
@@ -460,14 +462,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/game.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="0" selection-start="23" selection-end="23" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="323">
+        <state line="13" column="9" selection-start="382" selection-end="382" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="374">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/graphics.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="23" selection-start="1223" selection-end="1223" vertical-scroll-proportion="1.4722222" vertical-offset="12" max-vertical-offset="714">
+        <state line="36" column="19" selection-start="1243" selection-end="1243" vertical-scroll-proportion="0.0" vertical-offset="267" max-vertical-offset="714">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/maps.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="11" selection-start="141" selection-end="141" vertical-scroll-proportion="0.38636363" vertical-offset="0" max-vertical-offset="396">
           <folding />
         </state>
       </provider>

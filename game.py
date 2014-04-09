@@ -8,6 +8,9 @@ class GameState(object):
     for now, I'm making the crude assumption that the map read parses to an empty game-state
     """
     def __init__(self):
-        pass
+        self.map = {
+            'ground': (),
+            'particle': ()
+        }
 
 

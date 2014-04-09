@@ -8,7 +8,5 @@ class GameMap(object):
     @staticmethod
     def load_from_image():
         """
-
-
         """
         pass

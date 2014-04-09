@@ -1,5 +1,9 @@
 __author__ = 'Nathan'
 
+"""
+    This file is for testing only
+"""
+
 import sys
 import pygame
 
