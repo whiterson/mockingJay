@@ -2,7 +2,6 @@ __author__ = 'Nathan'
 
 import sys
 import pygame
-import time
 
 pygame.init()
 
