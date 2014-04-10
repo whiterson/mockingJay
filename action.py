@@ -12,5 +12,5 @@ class Action:
             if eff == curGoal.name:
                 ret = curGoal.value - value[count]
                 break
-            count+=1
+            count += 1
         return ret

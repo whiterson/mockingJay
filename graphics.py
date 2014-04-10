@@ -1,13 +1,14 @@
 __author__ = 'Nathan'
 import pygame
 
+
 class GameView(object):
     """
     GameView constructs the main GUI window and handles all the drawing routines
     """
 
     def __init__(self, width, height, cell_size=(10, 10)):
-        self.size = self.width, self.height = width, height
+        self.size = self.width, self.height = width * 10, height * 10
         self.screen = pygame.display.set_mode(self.size)
         self.state = None
         self.cell_size = cell_size
@@ -19,14 +20,16 @@ class GameView(object):
     def draw(self):
         if bool(self.state):
             for layer in self.layers:
+                print 'Rendering layer ' + str(layer)
                 for x, y, color in self.state.grid[layer]:
-                    print 'Rendering layer ' + str(layer)
-                    tile = pygame.Rect(x, y, *self.cell_size)
+                    tile = pygame.Rect(x * self.cell_size[0], y * self.cell_size[1], *self.cell_size)
                     pygame.draw.rect(self.layers[layer][0], pygame.Color(*color), tile, 0)
 
-        layers_ordered = sorted(self.layers.iteritems(), key=lambda x: x[1])
+        layers_ordered = sorted(self.layers.iteritems(), key=lambda g: g[1])
         for layer in layers_ordered:
-            self.screen.blit(layer[0], (0, 0))
+            self.screen.blit(layer[1][0], (0, 0))
+
+        pygame.display.flip()
 
     def render(self, gs):
         """
