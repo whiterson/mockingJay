@@ -17,16 +17,20 @@ class GameView(object):
             'particle': (pygame.Surface(self.size), 1)
         }
 
+        self.layers['particle'][0].set_colorkey((255, 0, 255))
+        self.layers['particle'][0].fill((255, 0, 255))
+
     def draw(self):
+        self.layers['particle'][0].fill((255, 0, 255))
         if bool(self.state):
             for layer in self.layers:
-                print 'Rendering layer ' + str(layer)
                 for x, y, color in self.state.grid[layer]:
                     tile = pygame.Rect(x * self.cell_size[0], y * self.cell_size[1], *self.cell_size)
                     pygame.draw.rect(self.layers[layer][0], pygame.Color(*color), tile, 0)
 
-        layers_ordered = sorted(self.layers.iteritems(), key=lambda g: g[1])
+        layers_ordered = sorted(self.layers.iteritems(), key=lambda g: g[1][1])
         for layer in layers_ordered:
+            print 'Blitting layer ' + str(layer)
             self.screen.blit(layer[1][0], (0, 0))
 
         pygame.display.flip()
