@@ -3,8 +3,8 @@ __author__ = 'Whitney'
 import sys
 import PIL
 import pygame
+import locationDef
 from PIL import Image
-
 
 def deepForest():
     testFile = open('maptest.txt', 'a')
@@ -76,10 +76,12 @@ def wadingWater():
     testFile.write('Pixel ID wadingWater\n')
     testFile.close()
 
+def cornucopia():
+    testFile = open('maptest.txt', 'a')
+    testFile.write('Pixel ID cornucopia\n')
+    testFile.close()
+
 """My Python Switch Case Based on Pixel Value"""
-"""I have terrains stored, and I was going to get the pixel value of each color, and use them
-    as the switch case values. Because Python isn't working though, I haven't done that yet. So everything's
-    set up, I just need the switch case stuff. Blargh."""
 switch = {(1, 35, 18) : deepForest,
           (97, 63, 2) : dirt,
           (70, 152, 18) : grass,
@@ -93,19 +95,22 @@ switch = {(1, 35, 18) : deepForest,
           (247, 249, 248) : snow,
           (38, 100, 121): swimmingWater,
           (169, 153, 18): tallGrass,
-          (88, 156, 179): wadingWater
+          (88, 156, 179): wadingWater,
+          (0,0,0): cornucopia
 }
 
-"""def readMap():"""
-testFile = open('maptest.txt', 'a')
-testFile.write('\n\n=============================\nNew Map Test\n=============================\n\n')
-map = Image.open('terrains/wadingWater.jpg')
-pixelMap = map.load()
-for i in range(map.size[0]):    # for every pixel:
-    for j in range(map.size[1]):
-        pixel = pixelMap[i,j]
-        if pixel in switch:
-            switch[pixel]()
-        else:
-            testFile.write("Color Error\n")
-testFile.close()
+def readMap(map):
+
+    testFile = open('maptest.txt', 'a')
+    testFile.write('\n\n=============================\nNew Map Test\n=============================\n\n')
+    map = Image.open('terrains/wadingWater.jpg')
+    pixelMap = map.load()
+    for i in range(map.size[0]):    # for every pixel:
+        for j in range(map.size[1]):
+            pixel = pixelMap[i,j]
+            if pixel in switch:
+                switch[pixel]()
+            else:
+                testFile.write("Color Error\n")
+    testFile.close()
+    return gameMap
