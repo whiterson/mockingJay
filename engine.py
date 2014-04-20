@@ -8,6 +8,7 @@ from action import Action
 from tribute import Tribute
 from goal import Goal
 
+
 class GameEngine(object):
     """
     here we will essentially manage everything and probably handle the controls
@@ -71,6 +72,7 @@ class GameEngine(object):
         #Need to apply the action here
         pass
 
+    @staticmethod
     def createActions():
         #Move action
         move_up = Action([], '', 1, 0, (0, -1))
@@ -92,7 +94,7 @@ class GameEngine(object):
         return [move_up, move_down, move_right, move_left, hunt, fight, scavenger,
                 craft, hide, getwater, rest, talkAlly]
 
-
+    @staticmethod
     def createGoals():
         #Just giving default values for now
         #Will figure out exact values later

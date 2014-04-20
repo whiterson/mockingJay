@@ -69,8 +69,6 @@ class Tribute(Particle):
                 else:
                     self.best_action(depth+1, 4, actionName, ret)
 
-
-
     def act(self):
         #this function will have to be customized for each action
         del self.ret[:]
