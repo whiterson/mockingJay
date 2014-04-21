@@ -21,8 +21,8 @@ class GameEngine(object):
     def start():
         me = GameEngine
         #create actions right now just moves
-        actions = me.createActions()
-        goals = me.createGoals()
+        actions = me.create_actions()
+        goals = me.create_goals()
 
         #create the goals here
         #not really needed right now
@@ -65,7 +65,7 @@ class GameEngine(object):
 
         for tribute in me.tributes:
             action = tribute.best_action()
-            GameEngine.doAction(action)
+            GameEngine.do_action(action)
 
         me.view.render(me.state)
 
@@ -73,12 +73,12 @@ class GameEngine(object):
         return True
 
     @staticmethod
-    def doAction(action):
+    def do_action(action):
         #Need to apply the action here
         pass
 
     @staticmethod
-    def createActions():
+    def create_actions():
         #Move action
         move_up = Action([], '', 1, 0, (0, -1))
         move_down = Action([], '', 1, 1, (0, 1))
@@ -100,7 +100,7 @@ class GameEngine(object):
                 craft, hide, getwater, rest, talkAlly]
 
     @staticmethod
-    def createGoals():
+    def create_goals():
         #Just giving default values for now
         #Will figure out exact values later
         #Starting these at zero and plan to increment every turn

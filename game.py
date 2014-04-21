@@ -29,3 +29,6 @@ class GameState(object):
         for particle in self.particles:
             particle.act()
         self.grid['particle'] = [(p.state[0], p.state[1], (255, 0, 0, 0)) for p in self.particles]
+
+    def apply_action(self):
+        pass
