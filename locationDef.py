@@ -47,35 +47,35 @@ def getSpeedChange(self):
     return self.terrain
 
 ########### SETS ##############
-def getStartSpace(self, input):
+def setStartSpace(self, input):
     self.startSpace = input
 
-def getPlayerThere(self, input):
+def setPlayerThere(self, input):
     self.playerThere = input
 
-def getTerrain(self, input):
+def setTerrain(self, input):
     self.terrain = input
 
-def getFoodChance(self, input):
+def setFoodChance(self, input):
     self.foodChance = input
 
-def getWaterChance(self, input):
+def setWaterChance(self, input):
     self.waterChance = input
 
-def getStickChance(self, input):
+def setStickChance(self, input):
     self.stickChance = input
 
-def getVisibility(self, input):
+def setVisibility(self, input):
     self.terrain = input
 
-def getSharpStoneChance(self):
+def setSharpStoneChance(self):
     self.terrain = input
 
-def getFeatherChance(self, input):
+def setFeatherChance(self, input):
     self.terrain = input
 
-def getVineChance(self, input):
+def setVineChance(self, input):
     self.terrain = input
 
-def getSpeedChange(self, input):
+def setSpeedChange(self, input):
     self.terrain = input
