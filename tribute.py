@@ -12,7 +12,7 @@ class Particle(object):
 class Tribute(Particle):
     #Goals = list of goals for tribute
     #actions = list of possible actions tribute can do
-    def __init__(self, goals, actions, x=0, y=0, district='d12'):
+    def __init__(self, goals, actions, x=0, y=0, district='d12', gender='male'):
         Particle.__init__(self, (x, y), 1, 1)
         self.goals = goals
         self.actions = actions
@@ -38,7 +38,7 @@ class Tribute(Particle):
             'stamina': U(d['stamina']['mean'], d['stamina']['spread']),
             'endurance': U(d['endurance']['mean'], d['endurance']['spread'])
         }
-        self.gender = ['male', 'female'][random.randint(0, 1)]
+        self.gender = gender
         self.last_name = random.choice(d['last_names'])
         if self.gender == 'male':
             self.first_name = random.choice(d['first_names_male'])
