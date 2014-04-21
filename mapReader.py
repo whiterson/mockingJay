@@ -10,96 +10,288 @@ def deepForest(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID DeepForest\n')
     testFile.close()
+    terrainType = 0
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def dirt(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID Dirt\n')
     testFile.close()
+    terrainType = 1
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def grass(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID Grass\n')
     testFile.close()
+    terrainType = 2
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def ice(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID Ice\n')
     testFile.close()
+    terrainType = 3
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def lightForest(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID lightForest\n')
     testFile.close()
+    terrainType = 4
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def lowVegetation(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID lowVegetation\n')
     testFile.close()
+    terrainType = 5
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def mud(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID Mud\n')
     testFile.close()
+    terrainType = 6
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def rock(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID Rock\n')
     testFile.close()
+    terrainType = 7
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def sand(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID Sand\n')
     testFile.close()
+    terrainType = 8
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def shallowWater(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID shallowWater\n')
     testFile.close()
+    terrainType = 9
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def snow(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID snow\n')
     testFile.close()
+    terrainType = 10
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def swimmingWater(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID swimmingWater\n')
     testFile.close()
+    terrainType = 11
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def tallGrass(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID tallGrass\n')
     testFile.close()
+    terrainType = 12
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def wadingWater(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID wadingWater\n')
     testFile.close()
+    terrainType = 13
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def cornucopia(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID cornucopia\n')
     testFile.close()
+    terrainType = 14
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 def startSpot(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID startSpot\n')
     testFile.close()
+    terrainType = 15
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.6)
+    definition.setWaterChance(0.3)
+    definition.setStickChance(0.8)
+    definition.setVisibility(0.1)
+    definition.setSharpStoneChance(0.2)
+    definition.setFeatherChance(0.2)
+    definition.setVineChance(0.4)
+    definition.setSpeedChange(0)
+
     return definition
 
 """My Python Switch Case Based on Pixel Value"""

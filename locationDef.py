@@ -68,7 +68,7 @@ def setStickChance(self, input):
 def setVisibility(self, input):
     self.terrain = input
 
-def setSharpStoneChance(self):
+def setSharpStoneChance(self, input):
     self.terrain = input
 
 def setFeatherChance(self, input):
