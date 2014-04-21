@@ -6,85 +6,101 @@ import pygame
 import locationDef
 from PIL import Image
 
-def deepForest():
+def deepForest(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID DeepForest\n')
     testFile.close()
+    return definition
 
-def dirt():
+def dirt(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID Dirt\n')
     testFile.close()
+    return definition
 
-def grass():
+def grass(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID Grass\n')
     testFile.close()
+    return definition
 
-def ice():
+def ice(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID Ice\n')
     testFile.close()
+    return definition
 
-def lightForest():
+def lightForest(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID lightForest\n')
     testFile.close()
+    return definition
 
-def lowVegetation():
+def lowVegetation(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID lowVegetation\n')
     testFile.close()
+    return definition
 
-def mud():
+def mud(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID Mud\n')
     testFile.close()
+    return definition
 
-def rock():
+def rock(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID Rock\n')
     testFile.close()
+    return definition
 
-def sand():
+def sand(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID Sand\n')
     testFile.close()
+    return definition
 
-def shallowWater():
+def shallowWater(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID shallowWater\n')
     testFile.close()
+    return definition
 
-def snow():
+def snow(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID snow\n')
     testFile.close()
+    return definition
 
-def swimmingWater():
+def swimmingWater(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID swimmingWater\n')
     testFile.close()
+    return definition
 
-def tallGrass():
+def tallGrass(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID tallGrass\n')
     testFile.close()
+    return definition
 
-def wadingWater():
+def wadingWater(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID wadingWater\n')
     testFile.close()
+    return definition
 
-def cornucopia():
+def cornucopia(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID cornucopia\n')
     testFile.close()
+    return definition
 
-def startSpot():
+def startSpot(definition):
     testFile = open('maptest.txt', 'a')
     testFile.write('Pixel ID startSpot\n')
     testFile.close()
+    return definition
 
 """My Python Switch Case Based on Pixel Value"""
 switch = {(1, 35, 18) : deepForest,
@@ -109,12 +125,17 @@ def readMap(map):
     testFile = open('maptest.txt', 'a')
     testFile.write('\n\n=============================\nNew Map Test\n=============================\n\n')
     map = Image.open('terrains/wadingWater.jpg')
+
+    gameMap = [[0 for t in xrange(map.size[0])] for r in xrange(map.size[1])]
+
     pixelMap = map.load()
     for i in range(map.size[0]):    # for every pixel:
         for j in range(map.size[1]):
             pixel = pixelMap[i,j]
             if pixel in switch:
-                switch[pixel]()
+                definition = locationDef();
+                locDef  = switch[pixel](definition)
+                gameMap[i][j] = locDef
             else:
                 testFile.write("Color Error\n")
     testFile.close()
