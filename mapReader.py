@@ -81,6 +81,11 @@ def cornucopia():
     testFile.write('Pixel ID cornucopia\n')
     testFile.close()
 
+def startSpot():
+    testFile = open('maptest.txt', 'a')
+    testFile.write('Pixel ID startSpot\n')
+    testFile.close()
+
 """My Python Switch Case Based on Pixel Value"""
 switch = {(1, 35, 18) : deepForest,
           (97, 63, 2) : dirt,
@@ -96,11 +101,11 @@ switch = {(1, 35, 18) : deepForest,
           (38, 100, 121): swimmingWater,
           (169, 153, 18): tallGrass,
           (88, 156, 179): wadingWater,
-          (0,0,0): cornucopia
+          (0,0,0): cornucopia,
+          (0,0,100): startSpot
 }
 
 def readMap(map):
-
     testFile = open('maptest.txt', 'a')
     testFile.write('\n\n=============================\nNew Map Test\n=============================\n\n')
     map = Image.open('terrains/wadingWater.jpg')
