@@ -29,10 +29,15 @@ class GameEngine(object):
 
         init_locations = [(x, y) for x in range(50) for y in range(50)]
         #creates all the actions
-        for i in range(0, 11):
+        for i in range(0, 12):
             location = random.choice(init_locations)
             init_locations.remove(location)
-            me.tributes.append(Tribute([], actions, *location))
+            me.tributes.append(Tribute(goals, actions, *location, district='d12', gender='male'))
+
+        for i in range(0, 12):
+            location = random.choice(init_locations)
+            init_locations.remove(location)
+            me.tributes.append(Tribute(goals, actions, *location, district='d12', gender='female'))
 
         me.dims = (50, 50)
         me.view = graphics.GameView(*me.dims)
