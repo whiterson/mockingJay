@@ -77,59 +77,22 @@ class Tribute(Particle):
 
     def act(self, gameMap):
         #this function will have to be customized for each action
-        print gameMap
-        print gameMap[0]
-        del self.ret[:]
-        self.best_action(0,4, '', self.ret, map)
+        self.ret=[]
+        self.best_action(0,4, '', self.ret, gameMap)
         bestVal = 1000000
+        print self.ret
         for pairs in self.ret:
-            if pairs[0] < best_val:
-                best_val = pairs[0]
+            if pairs[0] < bestVal:
+                bestVal = pairs[0]
                 action = pairs[1]
         
         self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0],
                       (self.state[1] + action.delta_state[1]) % engine.GameEngine.dims[1])
-
-    # Action will update the state of the world by calculating
-    # Goal updates and where it is / fuzzy logic of where other tributes are
-    # will update current selfs world.
-    def apply_action(self, action):
-        return []
-
     def calc_disc(self, gameMap):
-        rand = random.randrange(0,1)
-        loc = gameMap[self.state[0]][self.state[1]]
-        #Update the goals here........ need to make sure they are correct
-        if(action.index >= 0 and action.index <= 3):
-            blah = 0;
-        elif(action.index == 4): # find food action
-            #update the goal with the probability of finding food on this square * goal value change.
-            foodProb = loc.getFoodChance()
-            if(rand>foodProb):
-                ind = [x for x, y in self.goals if y.name == "hunger"]
-                self.goals.value -= action.values[0]
-        elif(action.index == 5): # kill .... not going to worry about now
-            blah = 0
-            #TODO
-        elif(action.index == 6): # Scavenger
-            blah = 0
-            #TODO
-        elif(action.index == 7): #craft
-            craftProb = loc.getSharStoneChance()
-            if(rand > craftProb):
-                ind = [x for x, y in self.goasl if y.name =="getweapon"]
-                self.goals.value -= action.values[0]
-        elif(action.index == 8): #getwater
-            waterProb = loc.getWaterChange()
-            if(rand > waterProb):
-                ind = [x for x, y in self.goalsif if y.name == "thirst"]
-                self.goals.value -= action.values[0]
-        elif(action.index == 9):#rest
-            blah = 0
-            #TODO
-        elif(action.index == 10): #talkAlly
-            blah = 0
-            #TODO
+        ret = 0
+        for goals in self.goals:
+            ret += goals.value*goals.value
+        return ret
 
     def updateGoals(self):
         blah = 0
@@ -137,7 +100,11 @@ class Tribute(Particle):
         #update goals to have the correct values based on attributes
 
     def endTurn(self):
-        blah = 0
+        for goal in self.goals:
+            if goal.name == "hunger":
+                goal.value += 1
+            if goal.name == "thirst":
+                goal.vale += 1
         #TODO
         #update thirst, tiredness, hunger, etc.... .
 
@@ -150,20 +117,22 @@ class Tribute(Particle):
             blah = 0
         elif(action.index == 4):#find food
              foodProb = loc.getFoodChance()
-             ind = [x for x, y in self.goasl if y.name =="hunger"]
-             self.goals[ind].value -= foodProb * action.values[0]
+             for goal in self.goals:
+                if goal.name == "hunger":
+                    goal.value -= foodProb* action.values[0]
         elif(action.index == 5): #kill
             blah = 0
         elif(action.index == 6): #scavenger
             blah = 0
         elif(action.index == 7): #craft
-            craftProb = loc.getSharStoneChance()
-            ind = [x for x, y in self.goasl if y.name =="getweapon"]
-            self.goals[ind].value -= craftProb * action.values[0]
+            craftProb = loc.getSharpStoneChance()
+            for goal in self.goals:
+                if goal.name == "getweapon":
+                    goal.value -= craftProb* action.values[0]
         elif(action.index == 8): #getwater
-            waterProb = loc.getWaterChange()
-            ind = [x for x, y in self.goasl if y.name =="thirst"]
-            self.goals[ind].value -= waterProb* action.values[0]
+            for goal in self.goals:
+                if goal.name == "thirs":
+                    goal.value -= waterProb* action.values[0]
         elif(action.index == 9): #rest
             blah = 0
     def calcDisc(self):

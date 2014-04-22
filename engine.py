@@ -66,7 +66,7 @@ class GameEngine(object):
 
         for tribute in me.tributes:
             tribute.act(me.gameMap) #finds bestAction and does it.
-
+            tribute.endTurn()
         me.view.render(me.state)
 
         me.state.update()
