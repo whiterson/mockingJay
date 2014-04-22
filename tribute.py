@@ -13,6 +13,7 @@ class Tribute(Particle):
     #Goals = list of goals for tribute
     #actions = list of possible actions tribute can do
     def __init__(self, goals, actions, x=0, y=0, district='d12', gender='male'):
+
         Particle.__init__(self, (x, y), 1, 1)
         self.goals = goals
         self.actions = actions
@@ -39,6 +40,12 @@ class Tribute(Particle):
             'endurance': U(d['endurance']['mean'], d['endurance']['spread'])
         }
         self.gender = gender
+        self.stats = {
+            'health': U(15, 5),
+            'energy': self.attributes['stamina'],
+            'hunger_energy': 100
+        }
+
         self.last_name = random.choice(d['last_names'])
         if self.gender == 'male':
             self.first_name = random.choice(d['first_names_male'])
@@ -55,39 +62,40 @@ class Tribute(Particle):
     #Need to figure out exactly how far
     #/ how we want to handle depth in this function
     #it will be very important
-    def best_action(self, depth, maxdepth, actionName, ret):
+    def best_action(self, depth, max_depth, action_name, ret):
         index = random.randint(0, len(self.actions) - 1)
 
         for action in self.actions:
-            if depth == maxdepth:
-                ret.append((self.calcDisc(),action))
+            if depth == max_depth:
+                ret.append((self.calc_disc(), action))
             else:
-                #Apply action to world copy and update and go one depth farther in
-                self.applyAction(action)
+                # Apply action to world copy and update and go one depth farther in
+                self.apply_action(action)
                 if depth == 0:
-                    self.best_action(depth+1, 4, action, ret)
+                    self.best_action(depth + 1, 4, action, ret)
                 else:
-                    self.best_action(depth+1, 4, actionName, ret)
+                    self.best_action(depth + 1, 4, action_name, ret)
 
     def act(self):
-        #this function will have to be customized for each action
+        # this function will have to be customized for each action
         del self.ret[:]
-        self.best_action(0,4, '', self.ret)
-        bestVal = 1000000
+        self.best_action(0, 4, '', self.ret)
+        best_val = 1000000
         for pairs in self.ret:
-            if pairs[0] < bestVal:
-                bestVal = pairs[0]
+            if pairs[0] < best_val:
+                best_val = pairs[0]
                 action = pairs[1]
         
-        self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0], (self.state[1] + action.delta_state[1]) % engine.GameEngine.dims[1])
+        self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0],
+                      (self.state[1] + action.delta_state[1]) % engine.GameEngine.dims[1])
 
-    #Action will update the state of the world by calculating
-    #Goal updates and where it is / fuzzy logic of where other tributes are
-    #will update current selfs world.
-    def applyAction(self, action):
+    # Action will update the state of the world by calculating
+    # Goal updates and where it is / fuzzy logic of where other tributes are
+    # will update current selfs world.
+    def apply_action(self, action):
         return []
 
-    def calcDisc(self):
+    def calc_disc(self):
         val = 0
         for goal in self.goals:
             val += goal.value*goal.value
