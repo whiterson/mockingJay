@@ -3,7 +3,7 @@ __author__ = 'Whitney'
 import sys
 import PIL
 import pygame
-import locationDef
+from locationDef import locationDef
 from PIL import Image
 
 def deepForest(definition):

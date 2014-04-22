@@ -7,7 +7,7 @@ import map
 from action import Action
 from tribute import Tribute
 from goal import Goal
-
+from mapReader import readMap
 
 class GameEngine(object):
     """
@@ -21,8 +21,8 @@ class GameEngine(object):
     def start():
         me = GameEngine
         #create actions right now just moves
-        actions = me.create_actions()
         goals = me.create_goals()
+        actions = me.create_actions()
 
         #create the goals here
         #not really needed right now
@@ -40,6 +40,7 @@ class GameEngine(object):
             me.tributes.append(Tribute(goals, actions, *location, district='d12', gender='female'))
 
         me.dims = (50, 50)
+        me.gameMap = readMap('maps/field.png')
         me.view = graphics.GameView(*me.dims)
         me.map = map.Map('maps/field.png')
         me.state = me.map.seed_game_state(me.tributes)  # game.GameState()
@@ -64,18 +65,12 @@ class GameEngine(object):
                 return False
 
         for tribute in me.tributes:
-            action = tribute.best_action()
-            GameEngine.do_action(action)
+            tribute.act(me.gameMap) #finds bestAction and does it.
 
         me.view.render(me.state)
 
         me.state.update()
         return True
-
-    @staticmethod
-    def do_action(action):
-        #Need to apply the action here
-        pass
 
     @staticmethod
     def create_actions():
@@ -92,7 +87,7 @@ class GameEngine(object):
         scavenger = Action([3], ["getweapon"], 1, 6, (0,0))
         craft = Action([4], ["getweapon"], 1, 7, (0,0))
         hide = Action([5], ["hide"], 1, 8, (0,0))
-        getwater = Action([5], ["hide"], 1, 9, (0,0))
+        getwater = Action([5], ["thirst"], 1, 9, (0,0))
         rest = Action([5], ["rest"], 1, 10, (0,0))
         talkAlly = Action([5], ["ally"], 1, 11, (0,0))
 

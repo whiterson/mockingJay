@@ -45,7 +45,6 @@ class locationDef(object):
 
     def getSpeedChange(self):
         return self.speedChange
-
     ########### SETS ##############
     def setStartSpace(self, input):
         self.startSpace = input
