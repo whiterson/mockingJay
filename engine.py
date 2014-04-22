@@ -29,12 +29,12 @@ class GameEngine(object):
 
         init_locations = [(x, y) for x in range(50) for y in range(50)]
         #creates all the actions
-        for i in range(0, 12):
+        for i in range(0, 1):
             location = random.choice(init_locations)
             init_locations.remove(location)
             me.tributes.append(Tribute(goals, actions, *location, district='d12', gender='male'))
 
-        for i in range(0, 12):
+        for i in range(0, 1):
             location = random.choice(init_locations)
             init_locations.remove(location)
             me.tributes.append(Tribute(goals, actions, *location, district='d12', gender='female'))
@@ -67,6 +67,7 @@ class GameEngine(object):
         for tribute in me.tributes:
             tribute.act(me.gameMap) #finds bestAction and does it.
             tribute.endTurn()
+
         me.view.render(me.state)
 
         me.state.update()

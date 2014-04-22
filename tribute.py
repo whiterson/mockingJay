@@ -2,6 +2,7 @@ import random
 import engine
 import json
 import copy
+import action as a2
 
 class Particle(object):
     def __init__(self, state=(0, 0), width=1, height=1):
@@ -80,7 +81,8 @@ class Tribute(Particle):
         self.ret=[]
         self.best_action(0,4, '', self.ret, gameMap)
         bestVal = 1000000
-        print self.ret
+        #print self.ret
+        action = self.ret[0][1]
         for pairs in self.ret:
             if pairs[0] < bestVal:
                 bestVal = pairs[0]
@@ -88,6 +90,7 @@ class Tribute(Particle):
         
         self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0],
                       (self.state[1] + action.delta_state[1]) % engine.GameEngine.dims[1])
+
     def calc_disc(self, gameMap):
         ret = 0
         for goals in self.goals:
@@ -104,7 +107,7 @@ class Tribute(Particle):
             if goal.name == "hunger":
                 goal.value += 1
             if goal.name == "thirst":
-                goal.vale += 1
+                goal.value += 1
         #TODO
         #update thirst, tiredness, hunger, etc.... .
 
