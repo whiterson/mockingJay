@@ -74,6 +74,17 @@ class Tribute(Particle):
             else:
                 tribute.best_action(depth+1, maxdepth, actionName, ret, gameMap)
 
+    def best_action_fighting(self, depth, maxdepth, actionName, ret, gameMap):
+        for action in self.actions:
+            tribute = copy.deepcopy(self)
+            tribute.applyAction(action, gameMap)
+            if depth == maxdepth:
+                ret.append((tribute.calcDisc(), action))
+            elif depth==0:
+                tribute.best_action(depth+1, maxdepth, action, ret, gameMap)
+            else:
+                tribute.best_action(depth+1, maxdepth, actionName, ret, gameMap)
+
     def act(self, gameMap):
         #this function will have to be customized for each action
         self.ret=[]
