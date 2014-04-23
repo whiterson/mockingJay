@@ -103,8 +103,10 @@ class Tribute(Particle):
         rand = random.randint(0,1)
         loc = gameMap[self.state[0]][self.state[1]]
         if(action.index >= 0 and action.index <= 3): #moving so don't know what gonna do here
-              self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0],
-                      (self.state[1] + action.delta_state[1]) % engine.GameEngine.dims[1])
+            loc.setTribute(None)
+            self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0],
+                (self.state[1] + action.delta_state[1]) % engine.GameEngine.dims[1])
+            (gameMap[self.state[0]][self.state[1]]).setTribute(self)
         elif(action.index == 4):#find food
              foodProb = loc.getFoodChance()
              for goal in self.goals:
