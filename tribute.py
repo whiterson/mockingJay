@@ -68,7 +68,7 @@ class Tribute(Particle):
             tribute = copy.deepcopy(self)
             tribute.applyAction(action, gameMap)
             if depth == maxdepth:
-                ret.append((tribute.calcDisc(), action))
+                ret.append((tribute.calcDisc(), actionName))
             elif depth==0:
                 tribute.best_action(depth+1, maxdepth, action, ret, gameMap)
             else:
@@ -80,13 +80,11 @@ class Tribute(Particle):
         self.best_action(0,0, '', self.ret, gameMap)
         action = self.ret[0][1]
         bestVal = self.ret[0][0]
-        print "ACTING*************************"
         for pairs in self.ret:
             print pairs[1].index, " = ", pairs[0]
             if pairs[0] < bestVal:
                 bestVal = pairs[0]
                 action = pairs[1]
-        print "**************************DONE Action = ", action.index
         #State updated now need to update the goals and other things.... for now just goals
         self.doAction(action, gameMap)
 
@@ -142,7 +140,8 @@ class Tribute(Particle):
     def applyAction(self, action, gameMap):
         loc = gameMap[self.state[0]][self.state[1]]
         if(action.index >= 0 and action.index <= 3): #moving so don't know what gonna do here
-            blah = 0
+             self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0],
+                      (self.state[1] + action.delta_state[1]) % engine.GameEngine.dims[1])
         elif(action.index == 4):#find food
              foodProb = loc.getFoodChance()
              for goal in self.goals:
@@ -171,6 +170,18 @@ class Tribute(Particle):
         for goal in self.goals:
             if(goal.value > 0):
                 val += goal.value*goal.value
-            else:
-                val -= goal.value
         return val
+
+    def checkDead(self):
+        for goal in self.goals:
+            if goal.name == " hunger ":
+                if goal.value >= 100:
+                    return " starvation "
+            if goal.name == " thirst ":
+                if goal.value >= 100:
+                    return " terminal dehydration "
+
+        if self.killed:
+            return self.killedBy
+        else:
+            return None
