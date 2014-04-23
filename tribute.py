@@ -65,42 +65,67 @@ class Tribute(Particle):
     #it will be very important
     def best_action(self, depth, maxdepth, actionName, ret, gameMap):
         for action in self.actions:
+            tribute = copy.deepcopy(self)
+            tribute.applyAction(action, gameMap)
             if depth == maxdepth:
-                ret.append((self.calc_disc(gameMap), action))
+                ret.append((tribute.calcDisc(), action))
+            elif depth==0:
+                tribute.best_action(depth+1, maxdepth, action, ret, gameMap)
             else:
-                #Apply action to world copy and update and go one depth farther in
-                tribute = copy.copy(self);
-                tribute.applyAction(action, gameMap)
-                if depth == 0:
-                    tribute.best_action(depth+1, maxdepth, action, ret, gameMap)
-                else:
-                    tribute.best_action(depth+1, maxdepth, actionName, ret, gameMap)
+                tribute.best_action(depth+1, maxdepth, actionName, ret, gameMap)
 
     def act(self, gameMap):
         #this function will have to be customized for each action
         self.ret=[]
-        self.best_action(0,4, '', self.ret, gameMap)
-        bestVal = 1000000
-        #print self.ret
+        self.best_action(0,0, '', self.ret, gameMap)
         action = self.ret[0][1]
+        bestVal = self.ret[0][0]
+        print "ACTING*************************"
         for pairs in self.ret:
+            print pairs[1].index, " = ", pairs[0]
             if pairs[0] < bestVal:
                 bestVal = pairs[0]
                 action = pairs[1]
-        
-        self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0],
+        print "**************************DONE Action = ", action.index
+        #State updated now need to update the goals and other things.... for now just goals
+        self.doAction(action, gameMap)
+
+    def doAction(self, action, gameMap):
+        rand = random.randint(0,1)
+        loc = gameMap[self.state[0]][self.state[1]]
+        if(action.index >= 0 and action.index <= 3): #moving so don't know what gonna do here
+              self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0],
                       (self.state[1] + action.delta_state[1]) % engine.GameEngine.dims[1])
+        elif(action.index == 4):#find food
+             foodProb = loc.getFoodChance()
+             for goal in self.goals:
+                if goal.name == "hunger":
+                    if(rand <= foodProb):
+                        goal.value -= action.values[0]
+        elif(action.index == 5): #kill
+            blah = 0
+        elif(action.index == 6): #scavenger
+            blah = 0
+        elif(action.index == 7): #craft
+            craftProb = loc.getSharpStoneChance()
+            for goal in self.goals:
+                if goal.name == "getweapon":
+                    if(rand<=craftProb):
+                        goal.value -= action.values[0]
+        elif(action.index == 8): #getwater
+            waterProb = loc.getWaterChance()
+            for goal in self.goals:
+                if goal.name == "thirst":
+                    if(rand<=waterProb):
+                        goal.value -= action.values[0]
+        elif(action.index == 9): #rest
+            blah = 0
 
     def calc_disc(self, gameMap):
         ret = 0
         for goals in self.goals:
             ret += goals.value*goals.value
         return ret
-
-    def updateGoals(self):
-        blah = 0
-        #TODO
-        #update goals to have the correct values based on attributes
 
     def endTurn(self):
         for goal in self.goals:
@@ -133,14 +158,19 @@ class Tribute(Particle):
                 if goal.name == "getweapon":
                     goal.value -= craftProb* action.values[0]
         elif(action.index == 8): #getwater
+            waterProb = loc.getWaterChance()
             for goal in self.goals:
-                if goal.name == "thirs":
+                if goal.name == "thirst":
                     goal.value -= waterProb* action.values[0]
         elif(action.index == 9): #rest
             blah = 0
+
+
     def calcDisc(self):
         val = 0
         for goal in self.goals:
             if(goal.value > 0):
                 val += goal.value*goal.value
+            else:
+                val -= goal.value
         return val
