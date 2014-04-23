@@ -1,7 +1,10 @@
+import tribute
+
 class locationDef(object):
     def __init__(self):
         self.startSpace = False     #True/False
         self.playerThere = False    #True/False
+        self.tribute = None         #Tribute that is in a space. Null otherwise
         self.terrain = 0            #0-15 Value for terrain Type
         self.foodChance = 1         #integer value for probability of food
         self.waterChance = 1        #integer value for probability of water
@@ -11,13 +14,18 @@ class locationDef(object):
         self.featherChance = 1      #for crafting: integer value probablilty of feather
         self.vineChance = 1         #for crafting: integer value probablity of vine
         self.speedChange = 0        #integer value movement speed changes
+        self.weaponChance = 0       #inter value for probability of weapon
 
     ########### GETS ##############
+
     def getStartSpace(self):
         return self.startSpace
 
     def getPlayerThere(self):
         return self.playerThere
+
+    def getTribute(self):
+        return self.tribute
 
     def getTerrain(self):
         return self.terrain
@@ -45,12 +53,19 @@ class locationDef(object):
 
     def getSpeedChange(self):
         return self.speedChange
+
+    def getWeaponChance(self):
+        return self.weaponChance
+
     ########### SETS ##############
     def setStartSpace(self, input):
         self.startSpace = input
 
     def setPlayerThere(self, input):
         self.playerThere = input
+
+    def setTribute(self, input):
+        self.tribute = input
 
     def setTerrain(self, input):
         self.terrain = input
@@ -78,3 +93,6 @@ class locationDef(object):
 
     def setSpeedChange(self, input):
         self.speedChange = input
+
+    def setWeaponChance(self, input):
+        self.weaponChance = input

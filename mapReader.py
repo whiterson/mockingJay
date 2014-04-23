@@ -13,14 +13,15 @@ def deepForest(definition):
     terrainType = 0
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
+    definition.setFoodChance(0.3)
+    definition.setWaterChance(0.1)
     definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
-    definition.setSharpStoneChance(0.2)
+    definition.setVisibility(0.2)
+    definition.setSharpStoneChance(0.1)
     definition.setFeatherChance(0.2)
     definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setSpeedChange(2)
+    definition.setWeaponChance(0.0)
 
     return definition
 
@@ -31,16 +32,18 @@ def dirt(definition):
     terrainType = 1
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
-    definition.setSharpStoneChance(0.2)
-    definition.setFeatherChance(0.2)
-    definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setFoodChance(0.05)
+    definition.setWaterChance(0.0)
+    definition.setStickChance(0.0)
+    definition.setVisibility(1)
+    definition.setSharpStoneChance(0.5)
+    definition.setFeatherChance(0.05)
+    definition.setVineChance(0.0)
+    definition.setSpeedChange(1)
+    definition.setWeaponChance(0.0)
 
     return definition
+
 
 def grass(definition):
     testFile = open('maptest.txt', 'a')
@@ -49,14 +52,15 @@ def grass(definition):
     terrainType = 2
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
-    definition.setSharpStoneChance(0.2)
+    definition.setFoodChance(0.1)
+    definition.setWaterChance(0.0)
+    definition.setStickChance(0.0)
+    definition.setVisibility(1)
+    definition.setSharpStoneChance(0.1)
     definition.setFeatherChance(0.2)
-    definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setVineChance(0.0)
+    definition.setSpeedChange(1)
+    definition.setWeaponChance(0.0)
 
     return definition
 
@@ -67,14 +71,15 @@ def ice(definition):
     terrainType = 3
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
-    definition.setSharpStoneChance(0.2)
-    definition.setFeatherChance(0.2)
-    definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setFoodChance(0.0)
+    definition.setWaterChance(0.6)
+    definition.setStickChance(0.0)
+    definition.setVisibility(1)
+    definition.setSharpStoneChance(0.0)
+    definition.setFeatherChance(0.0)
+    definition.setVineChance(0.0)
+    definition.setSpeedChange(3)
+    definition.setWeaponChance(0.0)
 
     return definition
 
@@ -85,14 +90,15 @@ def lightForest(definition):
     terrainType = 4
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
-    definition.setSharpStoneChance(0.2)
-    definition.setFeatherChance(0.2)
-    definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setFoodChance(0.4)
+    definition.setWaterChance(0.05)
+    definition.setStickChance(0.9)
+    definition.setVisibility(0.9)
+    definition.setSharpStoneChance(0.3)
+    definition.setFeatherChance(0.6)
+    definition.setVineChance(0.05)
+    definition.setSpeedChange(1)
+    definition.setWeaponChance(0.0)
 
     return definition
 
@@ -105,12 +111,13 @@ def lowVegetation(definition):
     definition.setTerrain(terrainType)
     definition.setFoodChance(0.6)
     definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
+    definition.setStickChance(0.05)
+    definition.setVisibility(0.05)
     definition.setSharpStoneChance(0.2)
     definition.setFeatherChance(0.2)
-    definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setVineChance(0.0)
+    definition.setSpeedChange(1)
+    definition.setWeaponChance(0.0)
 
     return definition
 
@@ -121,14 +128,15 @@ def mud(definition):
     terrainType = 6
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
-    definition.setSharpStoneChance(0.2)
-    definition.setFeatherChance(0.2)
-    definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setFoodChance(0.0)
+    definition.setWaterChance(0.05)
+    definition.setStickChance(0.0)
+    definition.setVisibility(1)
+    definition.setSharpStoneChance(0.05)
+    definition.setFeatherChance(0.0)
+    definition.setVineChance(0.0)
+    definition.setSpeedChange(1)
+    definition.setWeaponChance(0.0)
 
     return definition
 
@@ -139,14 +147,15 @@ def rock(definition):
     terrainType = 7
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
-    definition.setSharpStoneChance(0.2)
-    definition.setFeatherChance(0.2)
-    definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setFoodChance(0.0)
+    definition.setWaterChance(0.0)
+    definition.setStickChance(0.0)
+    definition.setVisibility(1)
+    definition.setSharpStoneChance(0.9)
+    definition.setFeatherChance(0.0)
+    definition.setVineChance(0.0)
+    definition.setSpeedChange(1)
+    definition.setWeaponChance(0.0)
 
     return definition
 
@@ -157,14 +166,15 @@ def sand(definition):
     terrainType = 8
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
+    definition.setFoodChance(0.0)
+    definition.setWaterChance(0.0)
+    definition.setStickChance(0.0)
+    definition.setVisibility(1)
     definition.setSharpStoneChance(0.2)
-    definition.setFeatherChance(0.2)
-    definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setFeatherChance(0.0)
+    definition.setVineChance(0.0)
+    definition.setSpeedChange(1)
+    definition.setWeaponChance(0.0)
 
     return definition
 
@@ -175,14 +185,15 @@ def shallowWater(definition):
     terrainType = 9
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
-    definition.setSharpStoneChance(0.2)
-    definition.setFeatherChance(0.2)
-    definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setFoodChance(0.05)
+    definition.setWaterChance(1)
+    definition.setStickChance(0.0)
+    definition.setVisibility(0.0)
+    definition.setSharpStoneChance(0.4)
+    definition.setFeatherChance(0.0)
+    definition.setVineChance(0.05)
+    definition.setSpeedChange(1)
+    definition.setWeaponChance(0.0)
 
     return definition
 
@@ -193,14 +204,15 @@ def snow(definition):
     terrainType = 10
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
-    definition.setSharpStoneChance(0.2)
-    definition.setFeatherChance(0.2)
-    definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setFoodChance(0.0)
+    definition.setWaterChance(0.2)
+    definition.setStickChance(0.0)
+    definition.setVisibility(0.0)
+    definition.setSharpStoneChance(0.1)
+    definition.setFeatherChance(0.0)
+    definition.setVineChance(0.0)
+    definition.setSpeedChange(2)
+    definition.setWeaponChance(0.0)
 
     return definition
 
@@ -211,14 +223,15 @@ def swimmingWater(definition):
     terrainType = 11
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
-    definition.setSharpStoneChance(0.2)
-    definition.setFeatherChance(0.2)
-    definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setFoodChance(0.3)
+    definition.setWaterChance(1)
+    definition.setStickChance(0.0)
+    definition.setVisibility(0.5)
+    definition.setSharpStoneChance(0.0)
+    definition.setFeatherChance(0.0)
+    definition.setVineChance(0.0)
+    definition.setSpeedChange(1)
+    definition.setWeaponChance(0.0)
 
     return definition
 
@@ -229,14 +242,15 @@ def tallGrass(definition):
     terrainType = 12
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
+    definition.setFoodChance(0.3)
+    definition.setWaterChance(0.0)
+    definition.setStickChance(0.1)
+    definition.setVisibility(0.7)
     definition.setSharpStoneChance(0.2)
     definition.setFeatherChance(0.2)
     definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setSpeedChange(1)
+    definition.setWeaponChance(0.0)
 
     return definition
 
@@ -247,14 +261,15 @@ def wadingWater(definition):
     terrainType = 13
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
-    definition.setSharpStoneChance(0.2)
-    definition.setFeatherChance(0.2)
-    definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setFoodChance(0.1)
+    definition.setWaterChance(1)
+    definition.setStickChance(0.0)
+    definition.setVisibility(1)
+    definition.setSharpStoneChance(0.4)
+    definition.setFeatherChance(0.0)
+    definition.setVineChance(0.05)
+    definition.setSpeedChange(3)
+    definition.setWeaponChance(0.0)
 
     return definition
 
@@ -265,14 +280,15 @@ def cornucopia(definition):
     terrainType = 14
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
-    definition.setSharpStoneChance(0.2)
-    definition.setFeatherChance(0.2)
-    definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setFoodChance(0.5)
+    definition.setWaterChance(0.0)
+    definition.setStickChance(0.0)
+    definition.setVisibility(1)
+    definition.setSharpStoneChance(0.0)
+    definition.setFeatherChance(0.0)
+    definition.setVineChance(0.0)
+    definition.setSpeedChange(1)
+    definition.setWeaponChance(0.9)
 
     return definition
 
@@ -283,14 +299,15 @@ def startSpot(definition):
     terrainType = 15
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
-    definition.setStickChance(0.8)
-    definition.setVisibility(0.1)
-    definition.setSharpStoneChance(0.2)
-    definition.setFeatherChance(0.2)
-    definition.setVineChance(0.4)
-    definition.setSpeedChange(0)
+    definition.setFoodChance(0.0)
+    definition.setWaterChance(0.0)
+    definition.setStickChance(0.0)
+    definition.setVisibility(1)
+    definition.setSharpStoneChance(0.0)
+    definition.setFeatherChance(0.0)
+    definition.setVineChance(0.0)
+    definition.setSpeedChange(1)
+    definition.setWeaponChance(0.0)
 
     return definition
 
