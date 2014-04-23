@@ -30,7 +30,6 @@ class GameView(object):
 
         layers_ordered = sorted(self.layers.iteritems(), key=lambda g: g[1][1])
         for layer in layers_ordered:
-            print 'Blitting layer ' + str(layer)
             self.screen.blit(layer[1][0], (0, 0))
 
         pygame.display.flip()

@@ -74,7 +74,10 @@ class GameEngine(object):
         for tribute in me.tributes:
             tribute.act(me.gameMap) #finds bestAction and does it.
             tribute.endTurn()
-
+            death = tribute.checkDead()
+            if death is None:
+                print tribute.first_name, " ", tribute.last_name, " death by ", death
+            me.tributes.remove(tribute)
         me.view.render(me.state)
 
         me.state.update()
@@ -132,10 +135,11 @@ class GameEngine(object):
         #KILL and HIDE are Changing Based on Attributes
         district = int(tribute.district[1:])
 
-        kill = Goal("kill", 0)
+        #Is going to need to be changed somehow based on attributes
+        kill = Goal("kill", 10-tribute.friendLiness)
         hide = Goal("hide", 0)
 
         #Also going to be dependent on the value of certain things
         getweapon = Goal("getweapon", 0)
-        ally = Goal("ally", 0)
+        ally = Goal("ally", tribute.friendLiness)
         return [hunger, thirst, rest, kill, hide, getweapon, ally]
