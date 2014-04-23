@@ -21,8 +21,9 @@ class GameEngine(object):
     def start():
         me = GameEngine
         #create actions right now just moves
-        goals = me.create_goals()
+        goals = [0, 0, 0, 0, 0, 0, 0]
         actions = me.create_actions()
+        numTributes = 0
 
         #create the goals here
         #not really needed right now
@@ -33,11 +34,17 @@ class GameEngine(object):
             location = random.choice(init_locations)
             init_locations.remove(location)
             me.tributes.append(Tribute(goals, actions, *location, district='d12', gender='male'))
+            numTributes += 1
 
         for i in range(0, 1):
             location = random.choice(init_locations)
             init_locations.remove(location)
             me.tributes.append(Tribute(goals, actions, *location, district='d12', gender='female'))
+            numTributes += 1
+
+        for i in range(0, numTributes):
+            initTribute = me.create_goals(me.tributes[i])
+            me.tributes[i] = initTribute
 
         me.dims = (50, 50)
         me.gameMap = readMap('maps/field.png')
@@ -68,9 +75,9 @@ class GameEngine(object):
             tribute.act(me.gameMap) #finds bestAction and does it.
             tribute.endTurn()
             death = tribute.checkDead()
-            if not death is None:
+            if death is None:
                 print tribute.first_name, " ", tribute.last_name, " death by ", death
-                me.tributes.remove(tribute)
+            me.tributes.remove(tribute)
         me.view.render(me.state)
 
         me.state.update()
@@ -84,6 +91,24 @@ class GameEngine(object):
         move_right = Action([], '', 1, 2, (1, 0))
         move_left = Action([], '', 1, 3, (-1, 0))
 
+
+        ################ INDEX LIST
+        # 0-3 movement
+        # 4 hunt
+        # 5 fight
+        # 6 scavenge
+        # 7 craft
+        # 8 hide
+        # 9 water
+        # 10 rest
+        # 11 talk
+
+
+        #1. How much I get back for doing the action in 2. EDIT THIS ONE
+        #2. The action (lists, so it can affect more than one thing.)
+        #3. Duration
+        #4. Index
+        #5. Movement Stuff (don't mess wid that)
         hunt = Action([5], ["hunger"], 1, 4,(0,0))
 
         fight = Action([5], ["kill"], 1, 5, (0,0))
@@ -99,7 +124,7 @@ class GameEngine(object):
                 craft, hide, getwater, rest, talkAlly]
 
     @staticmethod
-    def create_goals():
+    def create_goals(tribute):
         #Just giving default values for now
         #Will figure out exact values later
         #Starting these at zero and plan to increment every turn
@@ -107,13 +132,14 @@ class GameEngine(object):
         thirst = Goal("thirst", 2)
         rest = Goal("rest", 2)
 
+        #KILL and HIDE are Changing Based on Attributes
+        district = int(tribute.district[1:])
+
         #Is going to need to be changed somehow based on attributes
-        kill = Goal("kill", 10)
-
-
+        kill = Goal("kill", 10-tribute.friendLiness)
         hide = Goal("hide", 0)
 
         #Also going to be dependent on the value of certain things
         getweapon = Goal("getweapon", 0)
-        # ally = Goal("ally", tribute.friendLiness)
-        return [hunger, thirst, rest, kill, hide, getweapon]
+        ally = Goal("ally", tribute.friendLiness)
+        return [hunger, thirst, rest, kill, hide, getweapon, ally]

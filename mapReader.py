@@ -327,7 +327,7 @@ switch = {(1, 35, 18) : deepForest,
           (169, 153, 18): tallGrass,
           (88, 156, 179): wadingWater,
           (0,0,0): cornucopia,
-          (0,0,100): startSpot
+          (84,86,90): startSpot
 }
 
 def readMap(map):
