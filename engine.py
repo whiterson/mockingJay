@@ -100,15 +100,15 @@ class GameEngine(object):
         #Just giving default values for now
         #Will figure out exact values later
         #Starting these at zero and plan to increment every turn
-        hunger = Goal("hunger", 0)
-        thirst = Goal("thirst", 0)
-        rest = Goal("rest", 0)
+        hunger = Goal("hunger", 2)
+        thirst = Goal("thirst", 2)
+        rest = Goal("rest", 2)
 
         #Is going to need to be changed somehow based on attributes
-        kill = Goal("kill", 5)
-        hide = Goal("hide", 5)
+        kill = Goal("kill", 0)
+        hide = Goal("hide", 0)
 
         #Also going to be dependent on the value of certain things
-        getweapon = Goal("getweapon", 5)
-        ally = Goal("ally", 5)
+        getweapon = Goal("getweapon", 0)
+        ally = Goal("ally", 0)
         return [hunger, thirst, rest, kill, hide, getweapon, ally]
