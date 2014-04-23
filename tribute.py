@@ -2,7 +2,7 @@ import random
 import engine
 import json
 import copy
-import action as a2
+import sys
 
 class Particle(object):
     def __init__(self, state=(0, 0), width=1, height=1):
@@ -63,16 +63,18 @@ class Tribute(Particle):
     #Need to figure out exactly how far
     #/ how we want to handle depth in this function
     #it will be very important
-    def best_action(self, depth, maxdepth, actionName, ret, gameMap):
+    def calc_min_discomfort(self, depth, maxdepth, ret, gameMap):
+        min_val = sys.maxint
+
         for action in self.actions:
             tribute = copy.deepcopy(self)
             tribute.applyAction(action, gameMap)
             if depth == maxdepth:
-                ret.append((tribute.calcDisc(), actionName))
-            elif depth==0:
-                tribute.best_action(depth+1, maxdepth, action, ret, gameMap)
+                return tribute.calcDisc()
             else:
-                tribute.best_action(depth+1, maxdepth, actionName, ret, gameMap)
+                min_val = min(tribute.calc_min_discomfort(depth + 1, maxdepth, action, ret, gameMap), min_val)
+
+        return min_val
 
     def best_action_fighting(self, depth, maxdepth, actionName, ret, gameMap):
         for action in self.actions:
@@ -87,17 +89,15 @@ class Tribute(Particle):
 
     def act(self, gameMap):
         #this function will have to be customized for each action
-        self.ret=[]
-        self.best_action(0,0, '', self.ret, gameMap)
-        action = self.ret[0][1]
-        bestVal = self.ret[0][0]
-        for pairs in self.ret:
-            print pairs[1].index, " = ", pairs[0]
-            if pairs[0] < bestVal:
-                bestVal = pairs[0]
-                action = pairs[1]
+        best_action = (None, sys.maxint)
+        for a in self.actions:
+            t = copy.deepcopy(self)
+            v = self.calc_min_discomfort(0, 0, self.ret, gameMap)
+            if v < best_action[1]:
+                best_action = (a, v)
+
         #State updated now need to update the goals and other things.... for now just goals
-        self.doAction(action, gameMap)
+        self.doAction(best_action[0], gameMap)
 
     def doAction(self, action, gameMap):
         rand = random.randint(0,1)
