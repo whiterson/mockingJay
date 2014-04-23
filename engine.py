@@ -23,7 +23,6 @@ class GameEngine(object):
         #create actions right now just moves
         goals = [0, 0, 0, 0, 0, 0, 0]
         actions = me.create_actions()
-        numTributes = 0
 
         #create the goals here
         #not really needed right now
@@ -34,17 +33,15 @@ class GameEngine(object):
             location = random.choice(init_locations)
             init_locations.remove(location)
             me.tributes.append(Tribute(goals, actions, *location, district='d12', gender='male'))
-            numTributes += 1
 
         for i in range(0, 1):
             location = random.choice(init_locations)
             init_locations.remove(location)
             me.tributes.append(Tribute(goals, actions, *location, district='d12', gender='female'))
-            numTributes += 1
 
-        for i in range(0, numTributes):
+        for i in range(len(me.tributes)):
             initTribute = me.create_goals(me.tributes[i])
-            me.tributes[i] = initTribute
+            me.tributes[i].goals = initTribute
 
         me.dims = (50, 50)
         me.gameMap = readMap('maps/field.png')
@@ -75,9 +72,9 @@ class GameEngine(object):
             tribute.act(me.gameMap) #finds bestAction and does it.
             tribute.endTurn()
             death = tribute.checkDead()
-            if death is None:
+            if not death is None:
                 print tribute.first_name, " ", tribute.last_name, " death by ", death
-            me.tributes.remove(tribute)
+                me.tributes.remove(tribute)
         me.view.render(me.state)
 
         me.state.update()
@@ -136,10 +133,10 @@ class GameEngine(object):
         district = int(tribute.district[1:])
 
         #Is going to need to be changed somehow based on attributes
-        kill = Goal("kill", 10-tribute.friendLiness)
+        kill = Goal("kill", 10-tribute.attributes['friendliness'])
         hide = Goal("hide", 0)
 
         #Also going to be dependent on the value of certain things
         getweapon = Goal("getweapon", 0)
-        ally = Goal("ally", tribute.friendLiness)
+        ally = Goal("ally", tribute.attributes['friendliness'])
         return [hunger, thirst, rest, kill, hide, getweapon, ally]
