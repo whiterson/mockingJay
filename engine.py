@@ -22,7 +22,7 @@ class GameEngine(object):
         me = GameEngine
         #create actions right now just moves
         goals = [0, 0, 0, 0, 0, 0, 0]
-        actions = me.create_actions()
+        actions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         numTributes = 0
 
         #create the goals here
@@ -43,7 +43,7 @@ class GameEngine(object):
             numTributes += 1
 
         for i in range(0, numTributes):
-            initTribute = me.create_goals(me.tributes[i])
+            initTribute = me.create_actions(me.create_goals(me.tributes[i]))
             me.tributes[i] = initTribute
 
         me.dims = (50, 50)
@@ -84,7 +84,7 @@ class GameEngine(object):
         return True
 
     @staticmethod
-    def create_actions():
+    def create_actions(tribute):
         #Move action
         move_up = Action([], '', 1, 0, (0, -1))
         move_down = Action([], '', 1, 1, (0, 1))
@@ -120,8 +120,7 @@ class GameEngine(object):
         rest = Action([5], ["rest"], 1, 10, (0,0))
         talkAlly = Action([5], ["ally"], 1, 11, (0,0))
 
-        return [move_up, move_down, move_right, move_left, hunt, fight, scavenger,
-                craft, hide, getwater, rest, talkAlly]
+        return tribute
 
     @staticmethod
     def create_goals(tribute):
