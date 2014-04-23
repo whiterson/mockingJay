@@ -112,7 +112,8 @@ class Tribute(Particle):
         best_action = (None, sys.maxint)
         for a in self.actions:
             t = copy.deepcopy(self)
-            v = self.calc_min_discomfort(0, 2, gameMap)
+            t.doAction(a, gameMap)
+            v = t.calc_min_discomfort(0, 2, gameMap)
             if v < best_action[1]:
                 best_action = (a, v)
 
