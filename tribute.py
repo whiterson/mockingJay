@@ -40,6 +40,7 @@ class Tribute(Particle):
             'stamina': U(d['stamina']['mean'], d['stamina']['spread']),
             'endurance': U(d['endurance']['mean'], d['endurance']['spread'])
         }
+
         self.gender = gender
         self.stats = {
             'health': U(15, 5),
@@ -127,11 +128,15 @@ class Tribute(Particle):
             ret += goals.value*goals.value
         return ret
 
+
+    ##GOALS: hunger, thirst, kill, hide, weapon, ally, rest
     def endTurn(self):
         for goal in self.goals:
             if goal.name == "hunger":
                 goal.value += 1
             if goal.name == "thirst":
+                goal.value += 1
+            if goal.name == "rest":
                 goal.value += 1
         #TODO
         #update thirst, tiredness, hunger, etc.... .
