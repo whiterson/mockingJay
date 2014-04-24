@@ -9,6 +9,7 @@ class Particle(object):
         self.state = state
         self.width, self.height = width, height
 
+FIGHT_STATE = {'not_fighting': 0, 'fleeing': 1, 'fighting': 2}
 
 class Tribute(Particle):
     #Goals = list of goals for tribute
@@ -23,6 +24,8 @@ class Tribute(Particle):
         self.weapons = []
         self.has_ally = False
         self.allies = []
+        self.fighting_state = FIGHT_STATE['not_fighting']
+        self.opponent = None
 
         if do_not_load:
             self.attributes = None
@@ -78,12 +81,19 @@ class Tribute(Particle):
         n.killed = self.killed
         n.attributes = self.attributes.copy()
         n.stats = self.stats.copy()
+        n.opponent = self.opponent
         return n
 
     def __repr__(self):
         s = '<Tribute>(' + self.last_name + ', ' + self.first_name + ', ' + self.gender + '): '
         s += '\n' + str(self.attributes)
         return s
+
+    def engage_in_combat(self, t):
+        if self.fighting_state != FIGHT_STATE['not_fighting']:
+            self.fighting_state = FIGHT_STATE['fighting']
+            self.opponent = t
+            t.engage_in_combat(self)
 
     #Need to figure out exactly how far
     #/ how we want to handle depth in this function
@@ -113,19 +123,21 @@ class Tribute(Particle):
                 tribute.best_action(depth+1, maxdepth, actionName, ret, gameMap)
 
     def act(self, gameMap):
-        #this function will have to be customized for each action
-        best_action = (None, sys.maxint)
-        for a in self.actions:
-            t = copy.deepcopy(self)
-            t.do_action(a, gameMap)
-            v = t.calc_min_discomfort(0, 2, gameMap)
-            if v < best_action[1]:
-                best_action = (a, v)
+        if self.fighting_state == FIGHT_STATE['not_fighting']:
+            best_action = (None, sys.maxint)
+            for a in self.actions:
+                t = copy.deepcopy(self)
+                t.do_action(a, gameMap)
+                v = t.calc_min_discomfort(0, 2, gameMap)
+                if v < best_action[1]:
+                    best_action = (a, v)
 
-        #State updated now need to update the goals and other things.... for now just goals
-        print 'Doing action: ' + str(best_action[0])
-        self.do_action(best_action[0], gameMap)
+            print 'Doing action: ' + str(best_action[0])
+            self.do_action(best_action[0], gameMap)
 
+        elif self.fighting_state == FIGHT_STATE['fighting']:
+            pass
+    
     def do_action(self, action, game_map):
         rand = random.randint(0,1)
         loc = game_map[self.state[0]][self.state[1]]
