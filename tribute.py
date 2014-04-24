@@ -13,12 +13,11 @@ class Particle(object):
 class Tribute(Particle):
     #Goals = list of goals for tribute
     #actions = list of possible actions tribute can do
-    def __init__(self, goals, actions, x=0, y=0, district='d12', gender='male'):
+    def __init__(self, goals, actions, x=0, y=0, district='d12', gender='male', do_not_load=False):
 
         Particle.__init__(self, (x, y), 1, 1)
         self.goals = goals
         self.actions = actions
-        self.ret = []
         self.district = district
         self.hasWeapon = False
         self.weapons = []
@@ -56,10 +55,61 @@ class Tribute(Particle):
         self.last_name = random.choice(d['last_names'])
         if self.gender == 'male':
             self.first_name = random.choice(d['first_names_male'])
+        if do_not_load:
+            self.attributes = None
+            self.gender = gender
+            self.stats = None
+            self.last_name = None
+            self.first_name = None
+            self.killed = None
         else:
-            self.first_name = random.choice(d['first_names_female'])
+            d = json.load(open('./distributions/stats.json'))
 
-        pass
+            def U(mean, spread):
+                base = random.randrange(0, 2*spread) - spread
+                s = base + mean
+                return s
+
+            self.attributes = {
+                'size': U(d['size']['mean'], d['size']['spread']),
+                'strength': U(d['strength']['mean'], d['strength']['spread']),
+                'speed': U(d['speed']['mean'], d['speed']['spread']),
+                'hunting_skill': U(d['hunting_skill'][self.district]['mean'], d['hunting_skill'][self.district]['spread']),
+                'fighting_skill': U(d['fighting_skill'][self.district]['mean'], d['fighting_skill'][self.district]['spread']),
+                'weapon_skill': U(d['weapon_skill'][self.district]['mean'], d['weapon_skill'][self.district]['spread']),
+                'camouflage_skill': U(d['camouflage_skill'][self.district]['mean'], d['camouflage_skill'][self.district]['spread']),
+                'friendliness': U(d['friendliness']['mean'], d['friendliness']['spread']),
+                'district_prejudices': dict(d['district_prejudices'][self.district]),
+                'stamina': U(d['stamina']['mean'], d['stamina']['spread']),
+                'endurance': U(d['endurance']['mean'], d['endurance']['spread'])
+            }
+            self.gender = gender
+            self.stats = {
+                'health': U(15, 5),
+                'energy': self.attributes['stamina'],
+                'hunger_energy': 100
+            }
+
+            self.last_name = random.choice(d['last_names'])
+            if self.gender == 'male':
+                self.first_name = random.choice(d['first_names_male'])
+            else:
+                self.first_name = random.choice(d['first_names_female'])
+
+            self.killed = False
+            pass
+
+    def clone(self):
+        n_goals = [g.clone() for g in self.goals]
+        n_actions = self.actions[:]
+        n_district = self.district[:]
+        n_gender = self.gender[:]
+        n = Tribute(n_goals, n_actions, x=self.state[0], y=self.state[1], district=n_district,
+                    gender=n_gender, do_not_load=True)
+        n.killed = self.killed
+        n.attributes = self.attributes.copy()
+        n.stats = self.stats.copy()
+        return n
 
     def __repr__(self):
         s = '<Tribute>(' + self.last_name + ', ' + self.first_name + ', ' + self.gender + '): '
@@ -69,16 +119,16 @@ class Tribute(Particle):
     #Need to figure out exactly how far
     #/ how we want to handle depth in this function
     #it will be very important
-    def calc_min_discomfort(self, depth, maxdepth, ret, gameMap):
+    def calc_min_discomfort(self, depth, maxdepth, gameMap):
         min_val = sys.maxint
 
+        if depth == maxdepth:
+            return self.calcDisc()
+
         for action in self.actions:
-            tribute = copy.deepcopy(self)
+            tribute = self.clone()
             tribute.applyAction(action, gameMap)
-            if depth == maxdepth:
-                return tribute.calcDisc()
-            else:
-                min_val = min(tribute.calc_min_discomfort(depth + 1, maxdepth, action, ret, gameMap), min_val)
+            min_val = min(tribute.calc_min_discomfort(depth + 1, maxdepth, gameMap), min_val)
 
         return min_val
 
@@ -98,7 +148,8 @@ class Tribute(Particle):
         best_action = (None, sys.maxint)
         for a in self.actions:
             t = copy.deepcopy(self)
-            v = self.calc_min_discomfort(0, 0, self.ret, gameMap)
+            t.doAction(a, gameMap)
+            v = t.calc_min_discomfort(0, 2, gameMap)
             if v < best_action[1]:
                 best_action = (a, v)
 
@@ -144,8 +195,6 @@ class Tribute(Particle):
             ret += goals.value*goals.value
         return ret
 
-
-    ##GOALS: hunger, thirst, kill, hide, weapon, ally, rest
     def endTurn(self):
         for goal in self.goals:
             if (self.district == 1 or self.district == 2 or self.district == 4):

@@ -6,6 +6,8 @@ class Action:
         self.index = index
         self.delta_state = delta_state
 
+    def __repr__(self):
+        return '<Action>(' + str(self.index) + ', ' + str(self.delta_state) + ')'
 
     #def getGoalChange(self, curGoal):
     #    count = 0
