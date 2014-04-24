@@ -42,7 +42,8 @@ class Tribute(Particle):
             'district_prejudices': dict(d['district_prejudices'][self.district]),
             'stamina': U(d['stamina']['mean'], d['stamina']['spread']),
             'endurance': U(d['endurance']['mean'], d['endurance']['spread']),
-            'crafting_skill': U(d['crafting_skill']['mean'], d['crafting_skill']['spread'])
+            'crafting_skill': U(d['crafting_skill']['mean'], d['crafting_skill']['spread']),
+            'bloodlust': U(d['bloodlust']['mean'], d['bloodlust']['spread'])
         }
 
         self.gender = gender
@@ -81,7 +82,9 @@ class Tribute(Particle):
                 'friendliness': U(d['friendliness']['mean'], d['friendliness']['spread']),
                 'district_prejudices': dict(d['district_prejudices'][self.district]),
                 'stamina': U(d['stamina']['mean'], d['stamina']['spread']),
-                'endurance': U(d['endurance']['mean'], d['endurance']['spread'])
+                'endurance': U(d['endurance']['mean'], d['endurance']['spread']),
+                'crafting_skill': U(d['crafting_skill']['mean'], d['crafting_skill']['spread']),
+                'bloodlust': U(d['bloodlust']['mean'], d['bloodlust']['spread'])
             }
             self.gender = gender
             self.stats = {
@@ -197,9 +200,11 @@ class Tribute(Particle):
 
     def endTurn(self):
         for goal in self.goals:
+            if goal.name == "kill":
+                goal.value += ((self.attribute["bloodlust"]-1)/8)
             if (self.district == 1 or self.district == 2 or self.district == 4):
                 if goal.name == "kill":
-                    goal.value +=0.25
+                    goal.value +=0.1
                 if(goal.name == "weapon" and not self.hasWeapon):
                     goal.value += (1/(self.attributes['size'] + self.attributes['strength']))
             if ((self.attributes['size']+self.attributes['strength']) < 4):
@@ -207,12 +212,14 @@ class Tribute(Particle):
                     goal.value += 0.1
                 if(goal.name == "ally" and not self.hasAlly and not self.hasWeapon):
                     goal.value +=0.05
+                if(goal.name == "hide" and not self.hasAlly and not self.hasWeapon):
+                    goal.value += 0.01
             if goal.name == "hunger":
                 goal.value += ((1/self.attributes['endurance']) + (self.attributes['size']/5))
             if goal.name == "thirst":
                 goal.value += 1/self.attributes['endurance']
             if goal.name == "rest":
-                goal.value += (1/self.attributes['stamina'] + self.goals['hunger']/30 + self.goals['thirst']/20)
+                goal.value += (1/self.attributes['stamina'] + self.goals['hunger']/50 + self.goals['thirst']/30)
 
     #Action will update the state of the world by calculating
     #Goal updates and where it is / fuzzy logic of where other tributes are
@@ -254,13 +261,16 @@ class Tribute(Particle):
 
     def checkDead(self):
         for goal in self.goals:
-            if goal.name == " hunger ":
+            if goal.name == "hunger":
                 if goal.value >= 150:
                     return " starvation "
             #You get thirsty a lot faster than you get hungry
-            if goal.name == " thirst ":
+            if goal.name == "thirst":
                 if goal.value >= 100:
                     return " terminal dehydration "
+            if goal.name == "rest":
+                if goal.value >= 300:
+                    return " exhaustion "
 
         if self.killed:
             return self.killedBy
