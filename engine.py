@@ -20,7 +20,8 @@ class GameEngine(object):
     @staticmethod
     def start():
         me = GameEngine
-        #create actions right now just moves
+
+        #create actions (will be overwritten in a minute)
         move_up = Action([], '', 1, 0, (0, -1))
         move_down = Action([], '', 1, 1, (0, 1))
         move_right = Action([], '', 1, 2, (1, 0))
@@ -34,10 +35,16 @@ class GameEngine(object):
         rest = Action([5], ["rest"], 1, 10, (0,0))
         talkAlly = Action([5], ["ally"], 1, 11, (0,0))
 
+        #create actions (will be overwritten in a minute)
+        hunger = Goal("hunger", 0)
+        thirst = Goal("thirst", 0)
+        goalRest = Goal("rest", 0)
+        kill = Goal("kill", 0)
+        goalHide = Goal("hide", 0)
+        getweapon = Goal("getweapon", 0)
+        ally = Goal("ally", 0)
 
-
-
-        goals = [0, 0, 0, 0, 0, 0, 0]
+        goals = [hunger, thirst, goalRest, kill, goalHide, getweapon, ally]
         actions = [move_up, move_down, move_right, move_left, hunt, fight, scavenge, craft, hide, getwater, rest, talkAlly]
 
         #create the goals here
