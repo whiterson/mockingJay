@@ -93,7 +93,7 @@ class GameEngine(object):
 
         for tribute in me.tributes:
             tribute.act(me.gameMap) #finds bestAction and does it.
-            tribute.endTurn()
+            tribute.end_turn()
             death = tribute.checkDead()
             if not death is None:
                 print tribute.first_name, " ", tribute.last_name, " death by ", death

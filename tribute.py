@@ -19,9 +19,9 @@ class Tribute(Particle):
         self.goals = goals
         self.actions = actions
         self.district = district
-        self.hasWeapon = False
+        self.has_weapon = False
         self.weapons = []
-        self.hasAlly = False
+        self.has_ally = False
         self.allies = []
 
         if do_not_load:
@@ -88,25 +88,25 @@ class Tribute(Particle):
     #Need to figure out exactly how far
     #/ how we want to handle depth in this function
     #it will be very important
-    def calc_min_discomfort(self, depth, maxdepth, gameMap):
+    def calc_min_discomfort(self, depth, max_depth, gameMap):
         min_val = sys.maxint
 
-        if depth == maxdepth:
-            return self.calcDisc()
+        if depth == max_depth:
+            return self.calc_discomfort()
 
         for action in self.actions:
             tribute = self.clone()
-            tribute.applyAction(action, gameMap)
-            min_val = min(tribute.calc_min_discomfort(depth + 1, maxdepth, gameMap), min_val)
+            tribute.apply_action(action, gameMap)
+            min_val = min(tribute.calc_min_discomfort(depth + 1, max_depth, gameMap), min_val)
 
         return min_val
 
     def best_action_fighting(self, depth, maxdepth, actionName, ret, gameMap):
         for action in self.actions:
             tribute = copy.deepcopy(self)
-            tribute.applyAction(action, gameMap)
+            tribute.apply_action(action, gameMap)
             if depth == maxdepth:
-                ret.append((tribute.calcDisc(), action))
+                ret.append((tribute.calc_discomfort(), action))
             elif depth==0:
                 tribute.best_action(depth+1, maxdepth, action, ret, gameMap)
             else:
@@ -117,87 +117,87 @@ class Tribute(Particle):
         best_action = (None, sys.maxint)
         for a in self.actions:
             t = copy.deepcopy(self)
-            t.doAction(a, gameMap)
+            t.do_action(a, gameMap)
             v = t.calc_min_discomfort(0, 2, gameMap)
             if v < best_action[1]:
                 best_action = (a, v)
 
         #State updated now need to update the goals and other things.... for now just goals
         print 'Doing action: ' + str(best_action[0])
-        self.doAction(best_action[0], gameMap)
+        self.do_action(best_action[0], gameMap)
 
-    def doAction(self, action, gameMap):
+    def do_action(self, action, game_map):
         rand = random.randint(0,1)
-        loc = gameMap[self.state[0]][self.state[1]]
-        if(action.index >= 0 and action.index <= 3): #moving so don't know what gonna do here
+        loc = game_map[self.state[0]][self.state[1]]
+        if action.index >= 0 and action.index <= 3:  # moving so don't know what gonna do here
             loc.setTribute(None)
             self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0],
                 (self.state[1] + action.delta_state[1]) % engine.GameEngine.dims[1])
-            (gameMap[self.state[0]][self.state[1]]).setTribute(self)
-        elif (action.index == 4):  # find food
-             foodProb = loc.getFoodChance()
-             for goal in self.goals:
+            (game_map[self.state[0]][self.state[1]]).setTribute(self)
+        elif action.index == 4:  # find food
+            food_prob = loc.getFoodChance()
+            for goal in self.goals:
                 if goal.name == "hunger":
-                    if(rand <= foodProb):
+                    if rand <= food_prob:
                         goal.value -= action.values[0]
-        elif(action.index == 5): #kill
-            blah = 0
-        elif(action.index == 6): #scavenger
-            blah = 0
-        elif(action.index == 7): #craft
-            craftProb = loc.getSharpStoneChance()
+        elif action.index == 5:  # kill
+            pass
+        elif action.index == 6:  # scavenger
+            pass
+        elif action.index == 7: #craft
+            craft_prob = loc.getSharpStoneChance()
             for goal in self.goals:
                 if goal.name == "getweapon":
-                    if(rand<=craftProb):
+                    if rand <= craft_prob:
                         goal.value -= action.values[0]
-        elif(action.index == 8): #getwater
-            waterProb = loc.getWaterChance()
+        elif action.index == 8:  # get water
+            water_prob = loc.getWaterChance()
             for goal in self.goals:
                 if goal.name == "thirst":
-                    if(rand<=waterProb):
+                    if rand <= water_prob:
                         goal.value -= action.values[0]
-        elif(action.index == 9): #rest
-            blah = 0
+        elif action.index == 9: #rest
+            pass
 
     def calc_disc(self, gameMap):
         ret = 0
         for goals in self.goals:
-            ret += goals.value*goals.value
+            ret += goals.value * goals.value
         return ret
 
-    def endTurn(self):
+    def end_turn(self):
         for goal in self.goals:
-            if (self.district == 1 or self.district == 2 or self.district == 4):
+            if self.district == 1 or self.district == 2 or self.district == 4:
                 if goal.name == "kill":
                     goal.value +=0.25
-                if(goal.name == "weapon" and not self.hasWeapon):
+                if goal.name == "weapon" and not self.has_weapon:
                     goal.value += (1/(self.attributes['size'] + self.attributes['strength']))
-            if ((self.attributes['size']+self.attributes['strength']) < 4):
-                if(goal.name == "weapon" and not self.hasWeapon ):
+            if (self.attributes['size'] + self.attributes['strength']) < 4:
+                if goal.name == "weapon" and not self.has_weapon:
                     goal.value += 0.1
-                if(goal.name == "ally" and not self.hasAlly and not self.hasWeapon):
-                    goal.value +=0.05
+                if goal.name == "ally" and not self.has_ally and not self.has_weapon:
+                    goal.value += 0.05
             if goal.name == "hunger":
                 goal.value += ((1/self.attributes['endurance']) + (self.attributes['size']/5))
             if goal.name == "thirst":
                 goal.value += 1/self.attributes['endurance']
             if goal.name == "rest":
-                goal.value += (1/self.attributes['stamina'] + self.goals['hunger']/30 + self.goals['thirst']/20)
+                goal.value += (1/self.attributes['stamina'] + self.goals[0].value/30 + self.goals[1].value/20)
 
     #Action will update the state of the world by calculating
     #Goal updates and where it is / fuzzy logic of where other tributes are
     #will update current selfs world.
-    def applyAction(self, action, gameMap):
+    def apply_action(self, action, gameMap):
         loc = gameMap[self.state[0]][self.state[1]]
-        if(action.index >= 0 and action.index <= 3): #moving so don't know what gonna do here
-             self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0],
-                      (self.state[1] + action.delta_state[1]) % engine.GameEngine.dims[1])
-        elif(action.index == 4):#find food
+        if 3 >= action.index >= 0:  # moving so don't know what gonna do here
+            self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0],
+                          (self.state[1] + action.delta_state[1]) % engine.GameEngine.dims[1])
+        elif action.index == 4:#find food
              foodProb = loc.getFoodChance()
              for goal in self.goals:
                 if goal.name == "hunger":
                     goal.value -= foodProb* action.values[0]
-        elif(action.index == 5): #kill
+        elif action.index == 5: #kill
             blah = 0
         elif(action.index == 6): #scavenger
             blah = 0
@@ -214,8 +214,7 @@ class Tribute(Particle):
         elif(action.index == 9): #rest
             blah = 0
 
-
-    def calcDisc(self):
+    def calc_discomfort(self):
         val = 0
         for goal in self.goals:
             if(goal.value > 0):
