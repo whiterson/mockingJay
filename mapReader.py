@@ -90,7 +90,7 @@ def lightForest(definition):
     terrainType = 4
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.4)
+    definition.setFoodChance(0.3)
     definition.setWaterChance(0.05)
     definition.setStickChance(0.9)
     definition.setVisibility(0.9)
@@ -110,7 +110,7 @@ def lowVegetation(definition):
 
     definition.setTerrain(terrainType)
     definition.setFoodChance(0.6)
-    definition.setWaterChance(0.3)
+    definition.setWaterChance(0.05)
     definition.setStickChance(0.05)
     definition.setVisibility(0.05)
     definition.setSharpStoneChance(0.2)
@@ -129,7 +129,7 @@ def mud(definition):
 
     definition.setTerrain(terrainType)
     definition.setFoodChance(0.0)
-    definition.setWaterChance(0.05)
+    definition.setWaterChance(0.1)
     definition.setStickChance(0.0)
     definition.setVisibility(1)
     definition.setSharpStoneChance(0.05)
@@ -242,7 +242,7 @@ def tallGrass(definition):
     terrainType = 12
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.3)
+    definition.setFoodChance(0.2)
     definition.setWaterChance(0.0)
     definition.setStickChance(0.1)
     definition.setVisibility(0.7)
@@ -281,7 +281,7 @@ def cornucopia(definition):
 
     definition.setTerrain(terrainType)
     definition.setFoodChance(0.5)
-    definition.setWaterChance(0.0)
+    definition.setWaterChance(0.3)
     definition.setStickChance(0.0)
     definition.setVisibility(1)
     definition.setSharpStoneChance(0.0)

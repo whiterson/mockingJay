@@ -19,6 +19,42 @@ class Tribute(Particle):
         self.goals = goals
         self.actions = actions
         self.district = district
+        self.hasWeapon = False
+        self.weapons = []
+        self.hasAlly = False
+        self.allies = []
+        d = json.load(open('./distributions/stats.json'))
+
+        def U(mean, spread):
+            base = random.randrange(0, 2*spread) - spread
+            s = base + mean
+            return s
+
+        self.attributes = {
+            'size': U(d['size']['mean'], d['size']['spread']),
+            'strength': U(d['strength']['mean'], d['strength']['spread']),
+            'speed': U(d['speed']['mean'], d['speed']['spread']),
+            'hunting_skill': U(d['hunting_skill'][self.district]['mean'], d['hunting_skill'][self.district]['spread']),
+            'fighting_skill': U(d['fighting_skill'][self.district]['mean'], d['fighting_skill'][self.district]['spread']),
+            'weapon_skill': U(d['weapon_skill'][self.district]['mean'], d['weapon_skill'][self.district]['spread']),
+            'camouflage_skill': U(d['camouflage_skill'][self.district]['mean'], d['camouflage_skill'][self.district]['spread']),
+            'friendliness': U(d['friendliness']['mean'], d['friendliness']['spread']),
+            'district_prejudices': dict(d['district_prejudices'][self.district]),
+            'stamina': U(d['stamina']['mean'], d['stamina']['spread']),
+            'endurance': U(d['endurance']['mean'], d['endurance']['spread']),
+            'crafting_skill': U(d['crafting_skill']['mean'], d['crafting_skill']['spread'])
+        }
+
+        self.gender = gender
+        self.stats = {
+            'health': U(15, 5),
+            'energy': self.attributes['stamina'],
+            'hunger_energy': 100
+        }
+
+        self.last_name = random.choice(d['last_names'])
+        if self.gender == 'male':
+            self.first_name = random.choice(d['first_names_male'])
         if do_not_load:
             self.attributes = None
             self.gender = gender
@@ -162,12 +198,22 @@ class Tribute(Particle):
 
     def endTurn(self):
         for goal in self.goals:
+            if (self.district == 1 or self.district == 2 or self.district == 4):
+                if goal.name == "kill":
+                    goal.value +=0.25
+                if(goal.name == "weapon" and not self.hasWeapon):
+                    goal.value += (1/(self.attributes['size'] + self.attributes['strength']))
+            if ((self.attributes['size']+self.attributes['strength']) < 4):
+                if(goal.name == "weapon" and not self.hasWeapon ):
+                    goal.value += 0.1
+                if(goal.name == "ally" and not self.hasAlly and not self.hasWeapon):
+                    goal.value +=0.05
             if goal.name == "hunger":
-                goal.value += 1
+                goal.value += ((1/self.attributes['endurance']) + (self.attributes['size']/5))
             if goal.name == "thirst":
-                goal.value += 1
-        #TODO
-        #update thirst, tiredness, hunger, etc.... .
+                goal.value += 1/self.attributes['endurance']
+            if goal.name == "rest":
+                goal.value += (1/self.attributes['stamina'] + self.goals['hunger']/30 + self.goals['thirst']/20)
 
     #Action will update the state of the world by calculating
     #Goal updates and where it is / fuzzy logic of where other tributes are
@@ -210,8 +256,9 @@ class Tribute(Particle):
     def checkDead(self):
         for goal in self.goals:
             if goal.name == " hunger ":
-                if goal.value >= 100:
+                if goal.value >= 150:
                     return " starvation "
+            #You get thirsty a lot faster than you get hungry
             if goal.name == " thirst ":
                 if goal.value >= 100:
                     return " terminal dehydration "
