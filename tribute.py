@@ -118,6 +118,7 @@ class Tribute(Particle):
                 best_action = (a, v)
 
         #State updated now need to update the goals and other things.... for now just goals
+        print 'Doing action: ' + str(best_action[0])
         self.doAction(best_action[0], gameMap)
 
     def doAction(self, action, gameMap):
