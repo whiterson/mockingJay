@@ -20,9 +20,32 @@ class GameEngine(object):
     @staticmethod
     def start():
         me = GameEngine
-        #create actions right now just moves
-        goals = [0, 0, 0, 0, 0, 0, 0]
-        actions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+        #create actions (will be overwritten in a minute)
+        move_up = Action([], '', 1, 0, (0, -1))
+        move_down = Action([], '', 1, 1, (0, 1))
+        move_right = Action([], '', 1, 2, (1, 0))
+        move_left = Action([], '', 1, 3, (-1, 0))
+        hunt = Action([5], ["hunger"], 1, 4,(0,0))
+        fight = Action([5], ["kill"], 1, 5, (0,0))
+        scavenge = Action([3], ["getweapon"], 1, 6, (0,0))
+        craft = Action([4], ["getweapon"], 1, 7, (0,0))
+        hide = Action([5], ["hide"], 1, 8, (0,0))
+        getwater = Action([5], ["thirst"], 1, 9, (0,0))
+        rest = Action([5], ["rest"], 1, 10, (0,0))
+        talkAlly = Action([5], ["ally"], 1, 11, (0,0))
+
+        #create actions (will be overwritten in a minute)
+        hunger = Goal("hunger", 0)
+        thirst = Goal("thirst", 0)
+        goalRest = Goal("rest", 0)
+        kill = Goal("kill", 0)
+        goalHide = Goal("hide", 0)
+        getweapon = Goal("getweapon", 0)
+        ally = Goal("ally", 0)
+
+        goals = [hunger, thirst, goalRest, kill, goalHide, getweapon, ally]
+        actions = [move_up, move_down, move_right, move_left, hunt, fight, scavenge, craft, hide, getwater, rest, talkAlly]
 
         #create the goals here
         #not really needed right now
