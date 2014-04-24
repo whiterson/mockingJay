@@ -8,7 +8,7 @@ class Action:
         self.description = desc
 
     def __repr__(self):
-        return '<Action>(' + str(self.index) + ', ' + str(self.delta_state) + ')'
+        return '<Action>(' + str(self.index) + ', ' + str(self.delta_state) + ', "' + self.description + '")'
 
     #def getGoalChange(self, curGoal):
     #    count = 0

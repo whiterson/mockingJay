@@ -83,10 +83,10 @@ class GameEngine(object):
     @staticmethod
     def create_actions():
         #Move action
-        move_up = Action([], '', 1, 0, (0, -1))
-        move_down = Action([], '', 1, 1, (0, 1))
-        move_right = Action([], '', 1, 2, (1, 0))
-        move_left = Action([], '', 1, 3, (-1, 0))
+        move_up = Action([], '', 1, 0, (0, -1), 'move_up')
+        move_down = Action([], '', 1, 1, (0, 1), 'move_down')
+        move_right = Action([], '', 1, 2, (1, 0), 'move_right')
+        move_left = Action([], '', 1, 3, (-1, 0), 'move_left')
 
 
         ################ INDEX LIST
@@ -106,16 +106,16 @@ class GameEngine(object):
         #3. Duration
         #4. Index
         #5. Movement Stuff (don't mess wid that)
-        hunt = Action([5], ["hunger"], 1, 4,(0,0))
+        hunt = Action([5], ["hunger"], 1, 4, (0, 0), 'hunt')
 
-        fight = Action([5], ["kill"], 1, 5, (0,0))
+        fight = Action([5], ["kill"], 1, 5, (0,0), 'kill')
 
-        scavenger = Action([3], ["getweapon"], 1, 6, (0,0))
-        craft = Action([4], ["getweapon"], 1, 7, (0,0))
-        hide = Action([5], ["hide"], 1, 8, (0,0))
-        getwater = Action([5], ["thirst"], 1, 9, (0,0))
-        rest = Action([5], ["rest"], 1, 10, (0,0))
-        talkAlly = Action([5], ["ally"], 1, 11, (0,0))
+        scavenger = Action([3], ["getweapon"], 1, 6, (0,0), 'scavenge')
+        craft = Action([4], ["getweapon"], 1, 7, (0,0), 'craft')
+        hide = Action([5], ["hide"], 1, 8, (0, 0), 'hide')
+        getwater = Action([5], ["thirst"], 1, 9, (0,0), 'get_water')
+        rest = Action([5], ["rest"], 1, 10, (0,0), 'rest')
+        talkAlly = Action([5], ["ally"], 1, 11, (0,0), 'talk')
 
         return [move_up, move_down, move_right, move_left, hunt, fight, scavenger,
                 craft, hide, getwater, rest, talkAlly]

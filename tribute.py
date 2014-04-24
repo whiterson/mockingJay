@@ -129,7 +129,7 @@ class Tribute(Particle):
             self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0],
                 (self.state[1] + action.delta_state[1]) % engine.GameEngine.dims[1])
             (gameMap[self.state[0]][self.state[1]]).setTribute(self)
-        elif(action.index == 4):#find food
+        elif (action.index == 4):  # find food
              foodProb = loc.getFoodChance()
              for goal in self.goals:
                 if goal.name == "hunger":
