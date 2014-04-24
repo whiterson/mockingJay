@@ -23,38 +23,7 @@ class Tribute(Particle):
         self.weapons = []
         self.hasAlly = False
         self.allies = []
-        d = json.load(open('./distributions/stats.json'))
 
-        def U(mean, spread):
-            base = random.randrange(0, 2*spread) - spread
-            s = base + mean
-            return s
-
-        self.attributes = {
-            'size': U(d['size']['mean'], d['size']['spread']),
-            'strength': U(d['strength']['mean'], d['strength']['spread']),
-            'speed': U(d['speed']['mean'], d['speed']['spread']),
-            'hunting_skill': U(d['hunting_skill'][self.district]['mean'], d['hunting_skill'][self.district]['spread']),
-            'fighting_skill': U(d['fighting_skill'][self.district]['mean'], d['fighting_skill'][self.district]['spread']),
-            'weapon_skill': U(d['weapon_skill'][self.district]['mean'], d['weapon_skill'][self.district]['spread']),
-            'camouflage_skill': U(d['camouflage_skill'][self.district]['mean'], d['camouflage_skill'][self.district]['spread']),
-            'friendliness': U(d['friendliness']['mean'], d['friendliness']['spread']),
-            'district_prejudices': dict(d['district_prejudices'][self.district]),
-            'stamina': U(d['stamina']['mean'], d['stamina']['spread']),
-            'endurance': U(d['endurance']['mean'], d['endurance']['spread']),
-            'crafting_skill': U(d['crafting_skill']['mean'], d['crafting_skill']['spread'])
-        }
-
-        self.gender = gender
-        self.stats = {
-            'health': U(15, 5),
-            'energy': self.attributes['stamina'],
-            'hunger_energy': 100
-        }
-
-        self.last_name = random.choice(d['last_names'])
-        if self.gender == 'male':
-            self.first_name = random.choice(d['first_names_male'])
         if do_not_load:
             self.attributes = None
             self.gender = gender
