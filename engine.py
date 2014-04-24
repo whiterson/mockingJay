@@ -179,21 +179,35 @@ class GameEngine(object):
 
     @staticmethod
     def create_goals(tribute):
-        #Just giving default values for now
-        #Will figure out exact values later
-        #Starting these at zero and plan to increment every turn
+        #Base Hunger Thirst and Rest Values
         hunger = Goal("hunger", 2)
         thirst = Goal("thirst", 2)
-        rest = Goal("rest", 2)
+        rest = Goal("rest", 5)
 
-        #KILL and HIDE are Changing Based on Attributes
+        #Start-of-Game goals based on attributes and individual
         district = int(tribute.district[1:])
+        if district == 1 or district == 2 or district == 4:
+            killBase = 5
+        else:
+            killBase = 0
+        killLimit = killBase + ((tribute.attributes['bloodlust']-1)*2) + (11/tribute.attributes['friendliness']) + ((tribute.attributes['size']-1)/2) + ((tribute.attribute['fighting_skill']-1)/2) + ((tribute.attributes['strength']-1)/2)
+        killStats = randint(killBase, killLimit)
 
-        #Is going to need to be changed somehow based on attributes
-        kill = Goal("kill", 10-tribute.attributes['friendliness'])
-        hide = Goal("hide", 0)
+        if(tribute.attributes['size'] + tribute.attributes['strength']) < 4:
+            hideBase = 10
+        else:
+            hideBase = 0
+        hideLimit = hideBase + (10/tribute.attributes['size']) + (5/tribute.attributes['strength']) + (tribute.attributes['camouflage_skill'] * 2) - tribute.attributes['fighting_skill']
+        hideStats = randint(hideBase, hideLimit)
 
-        #Also going to be dependent on the value of certain things
-        getweapon = Goal("getweapon", 0)
-        ally = Goal("ally", tribute.attributes['friendliness'])
+
+        getWeaponStats = ((tribute.attributes['weapon_skill']-1)*2) - (tribute.attributes['crafting_skill']-1)
+        allyStats = tribute.attributes['friendliness'] - tribute.attributes['bloodlust']
+
+
+        kill = Goal("kill", killStats)
+        hide = Goal("hide", hideStats)
+        getweapon = Goal("getweapon", getWeaponStats)
+        ally = Goal("ally", allyStats)
+
         return [hunger, thirst, rest, kill, hide, getweapon, ally]
