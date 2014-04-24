@@ -20,6 +20,10 @@ class Tribute(Particle):
         self.actions = actions
         self.ret = []
         self.district = district
+        self.hasWeapon = False
+        self.weapons = []
+        self.hasAlly = False
+        self.allies = []
         d = json.load(open('./distributions/stats.json'))
 
         def U(mean, spread):
@@ -38,7 +42,8 @@ class Tribute(Particle):
             'friendliness': U(d['friendliness']['mean'], d['friendliness']['spread']),
             'district_prejudices': dict(d['district_prejudices'][self.district]),
             'stamina': U(d['stamina']['mean'], d['stamina']['spread']),
-            'endurance': U(d['endurance']['mean'], d['endurance']['spread'])
+            'endurance': U(d['endurance']['mean'], d['endurance']['spread']),
+            'crafting_skill': U(d['crafting_skill']['mean'], d['crafting_skill']['spread'])
         }
 
         self.gender = gender
@@ -143,14 +148,22 @@ class Tribute(Particle):
     ##GOALS: hunger, thirst, kill, hide, weapon, ally, rest
     def endTurn(self):
         for goal in self.goals:
+            if (self.district == 1 or self.district == 2 or self.district == 4):
+                if goal.name == "kill":
+                    goal.value +=0.25
+                if(goal.name == "weapon" and not self.hasWeapon):
+                    goal.value += (1/(self.attributes['size'] + self.attributes['strength']))
+            if ((self.attributes['size']+self.attributes['strength']) < 4):
+                if(goal.name == "weapon" and not self.hasWeapon ):
+                    goal.value += 0.1
+                if(goal.name == "ally" and not self.hasAlly and not self.hasWeapon):
+                    goal.value +=0.05
             if goal.name == "hunger":
-                goal.value += 1
+                goal.value += ((1/self.attributes['endurance']) + (self.attributes['size']/5))
             if goal.name == "thirst":
-                goal.value += 1
+                goal.value += 1/self.attributes['endurance']
             if goal.name == "rest":
-                goal.value += 1
-        #TODO
-        #update thirst, tiredness, hunger, etc.... .
+                goal.value += (1/self.attributes['stamina'] + self.goals['hunger']/30 + self.goals['thirst']/20)
 
     #Action will update the state of the world by calculating
     #Goal updates and where it is / fuzzy logic of where other tributes are
@@ -193,8 +206,9 @@ class Tribute(Particle):
     def checkDead(self):
         for goal in self.goals:
             if goal.name == " hunger ":
-                if goal.value >= 100:
+                if goal.value >= 150:
                     return " starvation "
+            #You get thirsty a lot faster than you get hungry
             if goal.name == " thirst ":
                 if goal.value >= 100:
                     return " terminal dehydration "

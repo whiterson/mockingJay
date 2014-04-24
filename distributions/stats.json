@@ -58,6 +58,20 @@
         "d11": {"mean":6, "spread": 5},
         "d12": {"mean":6, "spread": 5}
     },
+    "crafting_skill": {
+        "d1": {"mean":5, "spread": 4},
+        "d2": {"mean":7, "spread": 4},
+        "d3": {"mean":7, "spread": 4},
+        "d4": {"mean":9, "spread": 2},
+        "d5": {"mean":9, "spread": 2},
+        "d6": {"mean":5, "spread": 4},
+        "d7": {"mean":8, "spread": 3},
+        "d8": {"mean":6, "spread": 5},
+        "d9": {"mean":6, "spread": 5},
+        "d10": {"mean":6, "spread": 5},
+        "d11": {"mean":6, "spread": 5},
+        "d12": {"mean":6, "spread": 5}
+    },
     "friendliness": {"mean":6, "spread": 5},
     "district_prejudices":
     {
