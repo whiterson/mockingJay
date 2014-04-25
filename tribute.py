@@ -137,7 +137,7 @@ class Tribute(Particle):
 
         elif self.fighting_state == FIGHT_STATE['fighting']:
             pass
-    
+
     def do_action(self, action, game_map):
         rand = random.randint(0,1)
         loc = game_map[self.state[0]][self.state[1]]
