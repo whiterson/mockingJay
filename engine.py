@@ -190,7 +190,7 @@ class GameEngine(object):
             killBase = 5
         else:
             killBase = 0
-        killLimit = killBase + ((tribute.attributes['bloodlust']-1)*2) + (11/tribute.attributes['friendliness']) + ((tribute.attributes['size']-1)/2) + ((tribute.attribute['fighting_skill']-1)/2) + ((tribute.attributes['strength']-1)/2)
+        killLimit = killBase + ((tribute.attributes['bloodlust']-1)*2) + (11/tribute.attributes['friendliness']) + ((tribute.attributes['size']-1)/2) + ((tribute.attributes['fighting_skill']-1)/2) + ((tribute.attributes['strength']-1)/2)
         killStats = randint(killBase, killLimit)
 
         if(tribute.attributes['size'] + tribute.attributes['strength']) < 4:
