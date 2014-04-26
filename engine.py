@@ -9,6 +9,7 @@ from tribute import Tribute
 from goal import Goal
 from mapReader import readMap
 from random import randint
+from pygame.locals import *
 
 class GameEngine(object):
     """
@@ -17,7 +18,8 @@ class GameEngine(object):
     constants = range(1)
     is_looping = False
     tributes = []
-
+    PAUSED = False
+    curTrib = None
     @staticmethod
     def start():
         me = GameEngine
@@ -67,12 +69,13 @@ class GameEngine(object):
             initTribute = me.create_goals(me.tributes[i])
             me.tributes[i].goals = initTribute
 
-        me.dims = (50, 50)
+        me.dims = (80, 70)
         me.gameMap = readMap('maps/field.png')
         me.view = graphics.GameView(*me.dims)
         me.map = map.Map('maps/field.png')
         me.state = me.map.seed_game_state(me.tributes)  # game.GameState()
         me.is_looping = True
+        me.curTrib = me.tributes[0]
         while me.is_looping and GameEngine.loop():
             pass
 
@@ -87,21 +90,32 @@ class GameEngine(object):
         @return: None
         """
         me = GameEngine
-
         for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_q:
+                    me.PAUSED = not me.PAUSED
             if event.type == pygame.QUIT:
+                pygame.quit()
                 return False
-
-        for tribute in me.tributes:
-            tribute.act(me.gameMap) #finds bestAction and does it.
-            tribute.end_turn()
-            death = tribute.checkDead()
-            if not death is None:
-                print tribute.first_name, " ", tribute.last_name, " death by ", death
-                me.tributes.remove(tribute)
-        me.view.render(me.state)
-
-        me.state.update()
+            if event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                x = pos[0] / 10
+                y = pos[1] / 10
+                for tribute in me.tributes:
+                    if (x,y) == tribute.state:
+                        me.PAUSED = True
+                        print tribute.attributes
+        if not me.PAUSED:
+            for tribute in me.tributes:
+                print tribute.state
+                tribute.act(me.gameMap) #finds bestAction and does it.
+                tribute.endTurn()
+                #death = tribute.checkDead()
+                #if death is None:
+                #    print tribute.first_name, " ", tribute.last_name, " death by ", death
+                #me.tributes.remove(tribute)
+            me.view.render(me.state, me.curTrib, me.tributes)
+            me.state.update()
         return True
 
     @staticmethod
