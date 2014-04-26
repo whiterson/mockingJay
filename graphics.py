@@ -24,7 +24,7 @@ class GameView(object):
         self.layers['particle'][0].fill((255, 0, 255))
         if bool(self.state):
             for layer in self.layers:
-                for x, y, color in self.state.grid[layer]:
+                for x, y, color, p in self.state.grid[layer]:
                     tile = pygame.Rect(x * self.cell_size[0], y * self.cell_size[1], *self.cell_size)
                     pygame.draw.rect(self.layers[layer][0], pygame.Color(*color), tile, 0)
 
@@ -54,9 +54,8 @@ class GameView(object):
                 if (i-2)%4==0 and i!=2:
                     sY+= 40
                     sX-=800
+
             #Check if alive here
-            print sX
-            print sY
             self.screen.blit(fontobject.render(tributes[i-2].first_name + ' - Alive', 1, (255, 255, 255)), (sX-15, sY+25))
             #Print weapons here
             #Print alive here
@@ -78,3 +77,5 @@ class GameView(object):
         self.screen.blit(fontobject.render(('Friendliness: ' +str(tribute.attributes['friendliness'])), 1, (255, 255, 255)), (510, 200))
         self.screen.blit(fontobject.render(('Stamina: ' +str(tribute.attributes['stamina'])), 1, (255, 255, 255)), (650, 200))
         self.screen.blit(fontobject.render(('Endurance: ' +str(tribute.attributes['endurance'])), 1, (255, 255, 255)), (510, 240))
+        self.screen.blit(fontobject.render(('Health: ' +str(tribute.stats['health'])) + ' / ' +
+                                           str(tribute.attributes['max_health']), 1, (255, 255, 255)), (650, 240))

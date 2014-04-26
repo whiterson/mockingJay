@@ -3,8 +3,7 @@ import engine
 import json
 import copy
 import sys
-from action import Action
-from goal import Goal
+from probability import uniform_variable as U
 
 class Particle(object):
     def __init__(self, state=(0, 0), width=1, height=1):
@@ -21,12 +20,8 @@ class Tribute(Particle):
         Particle.__init__(self, (x, y), 1, 1)
         self.goals = goals
         self.actions = actions
-        self.fight_actions = actions[:]
-        self.fight_actions.append(Action([5], 'offensive_defense', 1, 1000, (0, -1), 'attack_up'))
-        self.fight_actions.append(Action([5], 'offensive_defense', 1, 1000, (1, 0), 'attack_right'))
-        self.fight_actions.append(Action([5], 'offensive_defense', 1, 1000, (0, 1), 'attack_down'))
-        self.fight_actions.append(Action([5], 'offensive_defense', 1, 1000, (-1, 0), 'attack_left'))
-        self.fight_goals = goals[:]
+        self.fight_action = actions[5]
+        self.actions.remove(self.fight_action)
         self.district = district
         self.has_weapon = False
         self.weapons = []
@@ -45,11 +40,6 @@ class Tribute(Particle):
         else:
             d = json.load(open('./distributions/stats.json'))
 
-            def U(mean, spread):
-                base = random.randrange(0, 2*spread) - spread
-                s = base + mean
-                return s
-
             self.attributes = {
                 'size': U(d['size']['mean'], d['size']['spread']),
                 'strength': U(d['strength']['mean'], d['strength']['spread']),
@@ -63,17 +53,15 @@ class Tribute(Particle):
                 'stamina': U(d['stamina']['mean'], d['stamina']['spread']),
                 'endurance': U(d['endurance']['mean'], d['endurance']['spread']),
                 'crafting_skill': U(d['crafting_skill'][self.district]['mean'], d['crafting_skill'][self.district]['spread']),
-                'bloodlust': U(d['bloodlust']['mean'], d['bloodlust']['spread'])
+                'bloodlust': U(d['bloodlust']['mean'], d['bloodlust']['spread']),
+                'max_health': U(d['max_health']['mean'], d['max_health']['spread'])
             }
             self.gender = gender
             self.stats = {
-                'health': U(15, 5),
+                'health': self.attributes['max_health'],
                 'energy': self.attributes['stamina'],
                 'hunger_energy': 100
             }
-
-            self.fight_goals.append(Goal('health', -self.stats['health']))
-            self.fight_goals.append(Goal('offensive_defense', U(1000, 3)))
 
             self.last_name = random.choice(d['last_names'])
             if self.gender == 'male':
@@ -102,50 +90,84 @@ class Tribute(Particle):
         return s
 
     def engage_in_combat(self, t):
-        if self.fighting_state != FIGHT_STATE['not_fighting']:
+        if self.fighting_state == FIGHT_STATE['not_fighting']:
             self.fighting_state = FIGHT_STATE['fighting']
             self.opponent = t
             t.engage_in_combat(self)
             print str(self) + ' is engaging in combat with ' + str(t) + '!'
 
+    def disengage_in_combat(self, t):
+        if self.fighting_state != FIGHT_STATE['not_fighting']:
+            self.fighting_state = FIGHT_STATE['not_fighting']
+            self.opponent = None
+            t.disengage_in_combat(self)
+            print str(self) + ' is disengaging in combat with ' + str(t) + '!'
+
+    def surmise_enemy_hit(self, tribute):
+        """
+        returns the estimate average HP hit for an enemy
+        :param tribute: the enemy to surmise about
+        :return: the surmised value
+        """
+        return int(tribute.has_weapon) * 5 + int(tribute.attributes['strength']) / 2
+
+    def surmise_escape_turns(self, tribute):
+        turns = -1
+        if self.attributes['speed'] >= tribute.attributes['speed']:
+            turns = sys.maxint
+        else:
+            s = tribute.attributes['speed'] - self.attributes['speed']
+            distance = abs(self.state[0] - tribute.state[0]) + abs(self.state[1] - tribute.state[1])
+            turns = distance / s
+
+        return turns
+
+    def enemy_in_range(self, game_state):
+        for t in game_state.grid['particle']:
+            p = t[3]
+            d = abs(t[0] - self.state[0]) + abs(t[1] - self.state[1])
+            if 0 < d < 5 and p not in self.allies:
+                return p
+
+    def hurt(self, damage):
+        self.stats['health'] -= damage
+        if self.stats['health'] <= 0:
+            self.killed = True
+            self.killedBy = self.opponent
+            print str(self) + ' was killed by ' + str(self.opponent)
 
     #Need to figure out exactly how far
     #/ how we want to handle depth in this function
     #it will be very important
-    def calc_min_discomfort(self, depth, max_depth, gameMap):
+    def calc_min_discomfort(self, depth, max_depth, gameMap, actions):
         min_val = sys.maxint
 
         if depth == max_depth:
             return self.calc_discomfort()
 
-        for action in self.actions:
+        for action in actions:
             tribute = self.clone()
             tribute.apply_action(action, gameMap)
-            min_val = min(tribute.calc_min_discomfort(depth + 1, max_depth, gameMap), min_val)
+            min_val = min(tribute.calc_min_discomfort(depth + 1, max_depth, gameMap, actions), min_val)
 
         return min_val
 
-    def fight_calc_min_discomfort(self, depth, max_depth, gameMap):
-        min_val = sys.maxint
+    def decide_fight_move(self, game_map):
+        actions = ['attack_head', 'attack_chest', 'attack_gut', 'attack_legs', 'flee']
+        return random.choice(actions)
 
-        if depth == max_depth:
-            return self.calc_discomfort()
-
-        for action in self.fight_actions:
-            tribute = self.clone()
-            tribute.apply_action(action, gameMap)
-            min_val = min(tribute.calc_min_discomfort(depth + 1, max_depth, gameMap), min_val)
-
-        return min_val
-
-
-    def act(self, gameMap):
+    def act(self, gameMap, game_state):
         if self.fighting_state == FIGHT_STATE['not_fighting']:
             best_action = (None, sys.maxint)
-            for a in self.actions:
+            actions = self.actions
+
+            if self.enemy_in_range(game_state):
+                actions = self.actions + [self.fight_action]
+
+            for a in actions:
                 t = copy.deepcopy(self)
-                t.do_action(a, gameMap)
-                v = t.calc_min_discomfort(0, 2, gameMap)
+                t.apply_action(a, gameMap)
+                v = t.calc_min_discomfort(0, 2, gameMap, actions)
                 if v < best_action[1]:
                     best_action = (a, v)
 
@@ -153,24 +175,44 @@ class Tribute(Particle):
             self.do_action(best_action[0], gameMap)
 
         elif self.fighting_state == FIGHT_STATE['fighting']:
-            best_action = (None, sys.maxint)
-            for a in self.fight_actions:
-                t = copy.deepcopy(self)
-                t.do_action(a, gameMap)
-                v = t.fight_calc_min_discomfort(0, 2, gameMap)
-                if v < best_action[1]:
-                    best_action = (a, v)
+            best_action = self.decide_fight_move(gameMap)
+            self.do_fight_action(best_action)
 
-            print 'Doing action: ' + str(best_action[0])
-            self.do_action(best_action[0], gameMap)
+    def do_fight_action(self, action_name):
+        damage = 0
+        # with weapon d5 damage
+        if self.has_weapon:
+            damage = random.randrange(1, 6)
+        else:  # without, d2 damage
+            damage = random.randrange(1, 3)
+        draw = random.random()
+
+        if action_name == 'attack_head':
+            if draw > 0.6:
+                self.opponent.hurt(damage + 2)
+        elif action_name == 'attack_chest':
+            if draw > 0.2:
+                self.opponent.hurt(damage + 1)
+        elif action_name == 'attack_gut':
+            if draw > 0.2:
+                self.opponent.hurt(damage)
+        elif action_name == 'attack_legs':
+            if draw > 0.1:
+                self.opponent.hurt(damage - 1)
+        elif action_name == 'flee':
+            self.opponent.disengage_in_combat(self)
+            for goal in self.goals:
+                if goal.name == "kill":
+                    goal.value = 0
+            self.fighting_state = FIGHT_STATE['fleeing']
 
     def do_action(self, action, game_map):
-        rand = random.randint(0,1)
+        rand = random.randint(0, 1)
         loc = game_map[self.state[0]][self.state[1]]
         if action.index >= 0 and action.index <= 3:  # moving so don't know what gonna do here
             loc.setTribute(None)
-            self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0],
-                (self.state[1] + action.delta_state[1]) % engine.GameEngine.dims[1])
+            self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.map_dims[0],
+                (self.state[1] + action.delta_state[1]) % engine.GameEngine.map_dims[1])
             (game_map[self.state[0]][self.state[1]]).setTribute(self)
         elif action.index == 4:  # find food
             food_prob = loc.getFoodChance()
@@ -182,7 +224,7 @@ class Tribute(Particle):
             pass
         elif action.index == 6:  # scavenger
             pass
-        elif action.index == 7: #craft
+        elif action.index == 7:  # craft
             craft_prob = loc.getSharpStoneChance()
             for goal in self.goals:
                 if goal.name == "getweapon":
@@ -205,8 +247,8 @@ class Tribute(Particle):
 
     def end_turn(self):
         for goal in self.goals:
-            if goal.name == "kill":
-                goal.value += ((self.attributes["bloodlust"]-1)*8)
+            if goal.name == "kill" and self.fighting_state != FIGHT_STATE['fleeing']:
+                goal.value += ((self.attributes["bloodlust"]-1)/5.0)
             if (self.district == 1 or self.district == 2 or self.district == 4):
                 if goal.name == "kill":
                     goal.value +=0.1
@@ -240,15 +282,17 @@ class Tribute(Particle):
     def apply_action(self, action, gameMap):
         loc = gameMap[self.state[0]][self.state[1]]
         if 3 >= action.index >= 0:  # moving so don't know what gonna do here
-            self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.dims[0],
-                          (self.state[1] + action.delta_state[1]) % engine.GameEngine.dims[1])
+            self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.map_dims[0],
+                          (self.state[1] + action.delta_state[1]) % engine.GameEngine.map_dims[1])
         elif action.index == 4:#find food
              foodProb = loc.getFoodChance()
              for goal in self.goals:
                 if goal.name == "hunger":
                     goal.value -= foodProb* action.values[0]
         elif action.index == 5: #kill
-            blah = 0
+            for goal in self.goals:
+                if goal.name == "kill":
+                    goal.value -= action.values[0]
         elif(action.index == 6): #scavenger
             blah = 0
         elif(action.index == 7): #craft

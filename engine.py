@@ -53,7 +53,7 @@ class GameEngine(object):
         #create the goals here
         #not really needed right now
 
-        init_locations = [(x, y) for x in range(50) for y in range(50)]
+        init_locations = [(x, y) for x in range(50) for y in range(10)]
         #creates all the actions
         for i in range(0, 1):
             location = random.choice(init_locations)
@@ -70,6 +70,7 @@ class GameEngine(object):
             me.tributes[i].goals = initTribute
 
         me.dims = (80, 70)
+        me.map_dims = (50, 50)
         me.gameMap = readMap('maps/field.png')
         me.view = graphics.GameView(*me.dims)
         me.map = map.Map('maps/field.png')
@@ -108,8 +109,8 @@ class GameEngine(object):
         if not me.PAUSED:
             for tribute in me.tributes:
                 print tribute.state
-                tribute.act(me.gameMap) #finds bestAction and does it.
-                tribute.endTurn()
+                tribute.act(me.gameMap, me.state) #finds bestAction and does it.
+                tribute.end_turn()
                 #death = tribute.checkDead()
                 #if death is None:
                 #    print tribute.first_name, " ", tribute.last_name, " death by ", death
@@ -203,7 +204,7 @@ class GameEngine(object):
         if district == 1 or district == 2 or district == 4:
             killBase = 5
         else:
-            killBase = 0
+            killBase = 1
         killLimit = killBase + ((tribute.attributes['bloodlust']-1)*2) + (11/tribute.attributes['friendliness']) + ((tribute.attributes['size']-1)/2) + ((tribute.attributes['fighting_skill']-1)/2) + ((tribute.attributes['strength']-1)/2)
         killStats = randint(killBase, killLimit)
 

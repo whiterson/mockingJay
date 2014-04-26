@@ -342,7 +342,7 @@ def readMap(map):
         for j in range(map.size[1]):
             pixel = pixelMap[i,j]
             if pixel in switch:
-                definition = locationDef();
+                definition = locationDef()
                 locDef  = switch[pixel](definition)
                 gameMap[i][j] = locDef
             else:

@@ -21,12 +21,12 @@ class GameState(object):
         self.particles = particles
 
         self.grid = {
-            'ground': [(x, y, (r.randint(0, 255), r.randint(0, 255), r.randint(0, 255), 0)) for x in range(width) for y in range(height)],
-            'particle': [(p.state[0], p.state[1], (255, 0, 0, 0)) for p in self.particles]
+            'ground': [(x, y, (r.randint(0, 255), r.randint(0, 255), r.randint(0, 255), 0), None) for x in range(width) for y in range(height)],
+            'particle': [(p.state[0], p.state[1], (255, 0, 0, 0), p) for p in self.particles]
         }
 
     def update(self):
-        self.grid['particle'] = [(p.state[0], p.state[1], (255, 0, 0, 0)) for p in self.particles]
+        self.grid['particle'] = [(p.state[0], p.state[1], (255, 0, 0, 0), p) for p in self.particles]
 
     def apply_action(self):
         pass
