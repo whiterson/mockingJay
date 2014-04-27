@@ -313,6 +313,8 @@ class Tribute(Particle):
                 goal.value += 1/self.attributes['endurance']
             if goal.name == "rest":
                 goal.value += (1/self.attributes['stamina'] + self.goals[0].value/50 + self.goals[1].value/30)
+            if goal.name == 'fear':
+                goal.value -= 1
 
 
     #Action will update the state of the world by calculating
@@ -352,6 +354,12 @@ class Tribute(Particle):
                         goal.value += 10
                     if self.surmise_escape_turns(self.sighted) < 5:
                         goal.value += 10
+
+                    weakness = self.surmise_enemy_weakness(self.sighted)
+                    goal.value -= weakness
+                    if weakness < 1:
+                        goal.value -= 11
+
         elif(action.index == 6): #scavenger
             blah = 0
         elif(action.index == 7): #craft
