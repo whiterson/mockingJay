@@ -20,8 +20,11 @@ class Tribute(Particle):
         Particle.__init__(self, (x, y), 1, 1)
         self.goals = goals
         self.actions = actions
+
+        # remove the fight action. we don't want them fighting unless someone is in range
         self.fight_action = actions[5]
-        self.actions.remove(self.fight_action)
+        self.actions = self.actions[:5] + self.actions[6:]
+
         self.district = district
         self.has_weapon = False
         self.weapons = []
@@ -29,6 +32,7 @@ class Tribute(Particle):
         self.allies = []
         self.fighting_state = FIGHT_STATE['not_fighting']
         self.opponent = None
+        self.sighted = None
 
         if do_not_load:
             self.attributes = None
@@ -83,6 +87,7 @@ class Tribute(Particle):
         n.attributes = self.attributes.copy()
         n.stats = self.stats.copy()
         n.opponent = self.opponent
+        n.sighted = self.sighted
         return n
 
     def __repr__(self):
@@ -130,11 +135,13 @@ class Tribute(Particle):
                 return p
 
     def hurt(self, damage):
+        print str(self) + ' was hit for ' + str(damage) + ' damage'
         self.stats['health'] -= damage
         if self.stats['health'] <= 0:
             self.killed = True
             self.killedBy = self.opponent
-            print str(self) + ' was killed by ' + str(self.opponent)
+            print str(self) + ' was killed by ' + str(self.killedBy)
+            self.disengage_in_combat(self.opponent)
 
     #Need to figure out exactly how far
     #/ how we want to handle depth in this function
@@ -153,7 +160,7 @@ class Tribute(Particle):
         return min_val
 
     def decide_fight_move(self, game_map):
-        actions = ['attack_head', 'attack_chest', 'attack_gut', 'attack_legs', 'flee']
+        actions = ['attack_head', 'attack_chest', 'attack_gut', 'attack_legs']
         return random.choice(actions)
 
     def act(self, gameMap, game_state):
@@ -161,7 +168,9 @@ class Tribute(Particle):
             best_action = (None, sys.maxint)
             actions = self.actions
 
-            if self.enemy_in_range(game_state):
+            self.sighted = self.enemy_in_range(game_state)
+
+            if self.sighted:
                 actions = self.actions + [self.fight_action]
 
             for a in actions:
@@ -171,7 +180,7 @@ class Tribute(Particle):
                 if v < best_action[1]:
                     best_action = (a, v)
 
-            print 'Doing action: ' + str(best_action[0])
+            #print 'Doing action: ' + str(best_action[0])
             self.do_action(best_action[0], gameMap)
 
         elif self.fighting_state == FIGHT_STATE['fighting']:
@@ -180,24 +189,31 @@ class Tribute(Particle):
 
     def do_fight_action(self, action_name):
         damage = 0
-        # with weapon d5 damage
+        # with weapon 1d6 damage + 1d(str/2)
         if self.has_weapon:
-            damage = random.randrange(1, 6)
-        else:  # without, d2 damage
-            damage = random.randrange(1, 3)
+            damage = random.randrange(1, 7) + random.randrange(1, self.attributes['strength'] / 2)
+        else:  # without, 1d2 damage + 1d(str)
+            damage = random.randrange(1, 3) + random.randrange(1, self.attributes['strength'] + 1)
         draw = random.random()
+        chance_mult = 1
+
+        if self.attributes['fighting_skill'] > 3:
+            chance_mult += 0.1
+
+        if self.attributes['fighting_skill'] > 7:
+            chance_mult += 0.15
 
         if action_name == 'attack_head':
-            if draw > 0.6:
+            if draw < 0.5 * chance_mult:
                 self.opponent.hurt(damage + 2)
         elif action_name == 'attack_chest':
-            if draw > 0.2:
+            if draw < 0.8 * chance_mult:
                 self.opponent.hurt(damage + 1)
         elif action_name == 'attack_gut':
-            if draw > 0.2:
+            if draw < 0.8 * chance_mult:
                 self.opponent.hurt(damage)
         elif action_name == 'attack_legs':
-            if draw > 0.1:
+            if draw < 0.9 * chance_mult:
                 self.opponent.hurt(damage - 1)
         elif action_name == 'flee':
             self.opponent.disengage_in_combat(self)
@@ -221,7 +237,7 @@ class Tribute(Particle):
                     if rand <= food_prob:
                         goal.value -= action.values[0]
         elif action.index == 5:  # kill
-            pass
+            self.sighted.engage_in_combat(self)
         elif action.index == 6:  # scavenger
             pass
         elif action.index == 7:  # craft
@@ -284,6 +300,8 @@ class Tribute(Particle):
         if 3 >= action.index >= 0:  # moving so don't know what gonna do here
             self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.map_dims[0],
                           (self.state[1] + action.delta_state[1]) % engine.GameEngine.map_dims[1])
+            g = random.choice(self.goals)
+            g.value -= -0.5
         elif action.index == 4:#find food
              foodProb = loc.getFoodChance()
              for goal in self.goals:

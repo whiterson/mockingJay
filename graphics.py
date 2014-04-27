@@ -45,24 +45,43 @@ class GameView(object):
         self.draw(tribute, tributes)
 
     def textStats(self, tributes):
-        fontobject=pygame.font.SysFont('Arial', 18)
-        sY = 520
-        sX = 70
-        for i in range(2, 4):
-            if i%2==0:
-                self.screen.blit(fontobject.render('District ' + str(i/2), 1, (255,255,255)), (sX, sY))
-                if (i-2)%4==0 and i!=2:
-                    sY+= 40
-                    sX-=800
+        fontobject = pygame.font.SysFont('Arial', 18)
+        s_x = 5
+        s_y = 520
+        for district, t1, t2 in tributes:
+            self.screen.blit(fontobject.render('District ' + district[1:], 1, (255, 255, 255)), (s_x, s_y))
+            color = ()
+            if t1.killed:
+                color = (255, 1, 0)
+            else:
+                color = (0, 255, 1)
+            self.screen.blit(fontobject.render(t1.first_name, 1, color), (s_x, s_y + 25))
+            if t2.killed:
+                color = (255, 1, 0)
+            else:
+                color = (0, 255, 1)
+            self.screen.blit(fontobject.render(t2.first_name, 1, color), (s_x, s_y + 50))
+            s_x += 90
 
-            #Check if alive here
-            self.screen.blit(fontobject.render(tributes[i-2].first_name + ' - Alive', 1, (255, 255, 255)), (sX-15, sY+25))
-            #Print weapons here
-            #Print alive here
-            sY+= 20
-            if i%2 == 0 and i!=2:
-                sX+=200
-                sY -= 40
+        # sY = 520
+        # sX = 70
+        # for i in range(2, 4):
+        #     if i % 2 == 0:
+        #         self.screen.blit(fontobject.render('District ' + str(i/2), 1, (255, 255, 255)), (sX, sY))
+        #         if (i - 2) % 4 == 0 and i != 2:
+        #             sY += 40
+        #             sX -= 800
+        #
+        #     #Check if alive here
+        #     if (i - 2) < len(tributes):
+        #         self.screen.blit(fontobject.render(tributes[i-2].first_name + ' - Alive', 1,
+        #                                           (255, 255, 255)), (sX - 15, sY + 25))
+        #     #Print weapons here
+        #     #Print alive here
+        #     sY += 20
+        #     if i % 2 == 0 and i != 2:
+        #         sX += 200
+        #         sY -= 40
 
     def textTribute(self, tribute):
         fontobject=pygame.font.SysFont('Arial', 18)

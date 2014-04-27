@@ -1,5 +1,5 @@
 {
-    "max_health": {"mean":15, "spread": 10},
+    "max_health": {"mean":30, "spread": 12},
     "size": {"mean":3, "spread": 2},
     "strength": {"mean":3, "spread": 2},
     "speed": {"mean":3, "spread": 2},
