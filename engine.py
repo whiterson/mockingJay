@@ -20,6 +20,7 @@ class GameEngine(object):
     tributes = []
     PAUSED = False
     curTrib = None
+    tributes_by_district = []
     @staticmethod
     def start():
         me = GameEngine
@@ -54,22 +55,25 @@ class GameEngine(object):
         #not really needed right now
 
         init_locations = [(x, y) for x in range(50) for y in range(10)]
-        #creates all the actions
-        for i in range(0, 1):
-            location = random.choice(init_locations)
-            init_locations.remove(location)
-            me.tributes.append(Tribute(goals, actions, *location, district='d12', gender='male'))
+        districts = ['d' + str(x) for x in range(1, 13)]
 
-        for i in range(0, 1):
+        for d in districts:
             location = random.choice(init_locations)
             init_locations.remove(location)
-            me.tributes.append(Tribute(goals, actions, *location, district='d12', gender='female'))
+            t1 = Tribute(goals, actions, *location, district=d, gender='male')
+            me.tributes.append(t1)
+
+            location = random.choice(init_locations)
+            init_locations.remove(location)
+            t2 = Tribute(goals, actions, *location, district=d, gender='female')
+            me.tributes.append(t2)
+            me.tributes_by_district.append((d, t1, t2))
 
         for i in range(len(me.tributes)):
             initTribute = me.create_goals(me.tributes[i])
             me.tributes[i].goals = initTribute
 
-        me.dims = (80, 70)
+        me.dims = (110, 70)
         me.map_dims = (50, 50)
         me.gameMap = readMap('maps/field.png')
         me.view = graphics.GameView(*me.dims)
@@ -108,14 +112,14 @@ class GameEngine(object):
                         print tribute.attributes
         if not me.PAUSED:
             for tribute in me.tributes:
-                print tribute.state
-                tribute.act(me.gameMap, me.state) #finds bestAction and does it.
+                #print tribute.state
+                tribute.act(me.gameMap, me.state)  # finds bestAction and does it.
                 tribute.end_turn()
-                #death = tribute.checkDead()
-                #if death is None:
-                #    print tribute.first_name, " ", tribute.last_name, " death by ", death
-                #me.tributes.remove(tribute)
-            me.view.render(me.state, me.curTrib, me.tributes)
+                death = tribute.checkDead()
+                if death is not None:
+                    print tribute.first_name, " ", tribute.last_name, " death by ", death
+                    me.tributes.remove(tribute)
+            me.view.render(me.state, me.curTrib, me.tributes_by_district)
             me.state.update()
         return True
 
