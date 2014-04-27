@@ -27,7 +27,7 @@ class Tribute(Particle):
 
         self.district = district
         self.has_weapon = False
-        self.weapons = []
+        self.weapon = 'none'
         self.has_ally = False
         self.allies = []
         self.fighting_state = FIGHT_STATE['not_fighting']
