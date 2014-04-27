@@ -404,7 +404,7 @@ def startSpot(definition):
     definition.setReedsChance(0.0)
     definition.setPebblesChance(0.0)
     definition.setThornsChance(0.0)
-    
+
     return definition
 
 """My Python Switch Case Based on Pixel Value"""

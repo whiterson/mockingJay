@@ -4,6 +4,8 @@ import json
 import copy
 import sys
 from probability import uniform_variable as U
+from weaponInfo import weaponInfo
+from weapon import weapon
 
 class Particle(object):
     def __init__(self, state=(0, 0), width=1, height=1):
@@ -33,6 +35,8 @@ class Tribute(Particle):
         self.fighting_state = FIGHT_STATE['not_fighting']
         self.opponent = None
         self.sighted = None
+
+        self.weaponInfo = weaponInfo()
 
         if do_not_load:
             self.attributes = None
