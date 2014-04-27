@@ -98,3 +98,5 @@ class GameView(object):
         self.screen.blit(fontobject.render(('Endurance: ' +str(tribute.attributes['endurance'])), 1, (255, 255, 255)), (510, 240))
         self.screen.blit(fontobject.render(('Health: ' +str(tribute.stats['health'])) + ' / ' +
                                            str(tribute.attributes['max_health']), 1, (255, 255, 255)), (650, 240))
+        self.screen.blit(fontobject.render('Last Action: ' + str(tribute.last_action), 1, (255, 255, 255)), (510, 275))
+        self.screen.blit(fontobject.render('Fighting: ' + str(tribute.fighting_state), 1, (255, 255, 255)), (510, 315))

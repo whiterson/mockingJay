@@ -32,7 +32,9 @@ class Tribute(Particle):
         self.allies = []
         self.fighting_state = FIGHT_STATE['not_fighting']
         self.opponent = None
+        self.last_opponent = None
         self.sighted = None
+        self.last_action = None
 
         if do_not_load:
             self.attributes = None
@@ -88,6 +90,8 @@ class Tribute(Particle):
         n.stats = self.stats.copy()
         n.opponent = self.opponent
         n.sighted = self.sighted
+        n.last_action = self.last_action
+        n.last_opponent = self.last_opponent
         return n
 
     def __repr__(self):
@@ -114,7 +118,7 @@ class Tribute(Particle):
         :param tribute: the enemy to surmise about
         :return: the surmised value
         """
-        return int(tribute.has_weapon) * 5 + int(tribute.attributes['strength']) / 2
+        return 1 + int(tribute.has_weapon) * 5 + int(tribute.attributes['strength']) / 2
 
     def surmise_escape_turns(self, tribute):
         turns = -1
@@ -127,6 +131,11 @@ class Tribute(Particle):
 
         return turns
 
+    def surmise_enemy_weakness(self, tribute):
+        index = tribute.attributes['max_health'] - tribute.stats['health']
+        val = float(index) / tribute.attributes['max_health']
+        return int(round(val * 5))
+
     def enemy_in_range(self, game_state):
         for t in game_state.grid['particle']:
             p = t[3]
@@ -134,9 +143,10 @@ class Tribute(Particle):
             if 0 < d < 5 and p not in self.allies:
                 return p
 
-    def hurt(self, damage):
-        print str(self) + ' was hit for ' + str(damage) + ' damage'
+    def hurt(self, damage, place):
+        print str(self) + ' was hit in the ' + place + ' for ' + str(damage) + ' damage'
         self.stats['health'] -= damage
+        self.goals[7].value += damage
         if self.stats['health'] <= 0:
             self.killed = True
             self.killedBy = self.opponent
@@ -160,11 +170,15 @@ class Tribute(Particle):
         return min_val
 
     def decide_fight_move(self, game_map):
-        actions = ['attack_head', 'attack_chest', 'attack_gut', 'attack_legs']
-        return random.choice(actions)
+        if self.goals[7].value < random.randrange(5, 20):
+            actions = ['attack_head', 'attack_chest', 'attack_gut', 'attack_legs']
+            return random.choice(actions)
+        else:
+            print str(self), ' became scared and is trying to flee!'
+            return 'flee'
 
     def act(self, gameMap, game_state):
-        if self.fighting_state == FIGHT_STATE['not_fighting']:
+        if self.fighting_state != FIGHT_STATE['fighting']:
             best_action = (None, sys.maxint)
             actions = self.actions
 
@@ -180,18 +194,22 @@ class Tribute(Particle):
                 if v < best_action[1]:
                     best_action = (a, v)
 
-            #print 'Doing action: ' + str(best_action[0])
+            if self.fighting_state == FIGHT_STATE['fleeing']:
+                pass
+
             self.do_action(best_action[0], gameMap)
 
         elif self.fighting_state == FIGHT_STATE['fighting']:
             best_action = self.decide_fight_move(gameMap)
             self.do_fight_action(best_action)
 
+
     def do_fight_action(self, action_name):
+        self.last_action = action_name
         damage = 0
-        # with weapon 1d6 damage + 1d(str/2)
+        # with weapon 1d6 damage + 1d(str/2) + 1
         if self.has_weapon:
-            damage = random.randrange(1, 7) + random.randrange(1, self.attributes['strength'] / 2)
+            damage = random.randrange(1, 7) + random.randrange(1, self.attributes['strength'] / 2) + 1
         else:  # without, 1d2 damage + 1d(str)
             damage = random.randrange(1, 3) + random.randrange(1, self.attributes['strength'] + 1)
         draw = random.random()
@@ -205,16 +223,20 @@ class Tribute(Particle):
 
         if action_name == 'attack_head':
             if draw < 0.5 * chance_mult:
-                self.opponent.hurt(damage + 2)
+                self.opponent.hurt(damage + 2, 'head')
+                self.goals[7].value = max(self.goals[7].value - (damage + 2) / 2, 0)
         elif action_name == 'attack_chest':
             if draw < 0.8 * chance_mult:
-                self.opponent.hurt(damage + 1)
+                self.opponent.hurt(damage + 1, 'chest')
+                self.goals[7].value = max(self.goals[7].value - (damage + 1) / 2, 0)
         elif action_name == 'attack_gut':
             if draw < 0.8 * chance_mult:
-                self.opponent.hurt(damage)
+                self.opponent.hurt(damage, 'gut')
+                self.goals[7].value = max(self.goals[7].value - (damage) / 2, 0)
         elif action_name == 'attack_legs':
             if draw < 0.9 * chance_mult:
-                self.opponent.hurt(damage - 1)
+                self.opponent.hurt(damage - 1, 'legs')
+                self.goals[7].value = max(self.goals[7].value - (damage - 1) / 2, 0)
         elif action_name == 'flee':
             self.opponent.disengage_in_combat(self)
             for goal in self.goals:
@@ -223,6 +245,7 @@ class Tribute(Particle):
             self.fighting_state = FIGHT_STATE['fleeing']
 
     def do_action(self, action, game_map):
+        self.last_action = action
         rand = random.randint(0, 1)
         loc = game_map[self.state[0]][self.state[1]]
         if action.index >= 0 and action.index <= 3:  # moving so don't know what gonna do here
@@ -298,8 +321,21 @@ class Tribute(Particle):
     def apply_action(self, action, gameMap):
         loc = gameMap[self.state[0]][self.state[1]]
         if 3 >= action.index >= 0:  # moving so don't know what gonna do here
+            distance_before = 0
+            if self.opponent:
+                distance_before = abs(self.state[0] - self.last_opponent.state[0]) + \
+                                  abs(self.state[1] + self.last_opponent.state[1])
             self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.map_dims[0],
                           (self.state[1] + action.delta_state[1]) % engine.GameEngine.map_dims[1])
+
+            distance_after = 1
+            if self.opponent:
+                distance_after = abs(self.state[0] - self.last_opponent.state[0]) + \
+                                 abs(self.state[1] + self.last_opponent.state[1])
+
+            if distance_after <= distance_before:
+                self.goals[7].value += random.randrange(1, 10)
+
             g = random.choice(self.goals)
             g.value -= -0.5
         elif action.index == 4:#find food
@@ -311,6 +347,11 @@ class Tribute(Particle):
             for goal in self.goals:
                 if goal.name == "kill":
                     goal.value -= action.values[0]
+                if goal.name == "fear":
+                    if self.surmise_enemy_hit(self.sighted) > self.surmise_enemy_hit(self):
+                        goal.value += 10
+                    if self.surmise_escape_turns(self.sighted) < 5:
+                        goal.value += 10
         elif(action.index == 6): #scavenger
             blah = 0
         elif(action.index == 7): #craft

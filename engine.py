@@ -54,8 +54,8 @@ class GameEngine(object):
         #create the goals here
         #not really needed right now
 
-        init_locations = [(x, y) for x in range(50) for y in range(10)]
-        districts = ['d' + str(x) for x in range(1, 13)]
+        init_locations = [(x, y) for x in range(10) for y in range(10)]
+        districts = ['d' + str(x) for x in range(1, 3)]
 
         for d in districts:
             location = random.choice(init_locations)
@@ -102,14 +102,13 @@ class GameEngine(object):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return False
-            if event.type == pygame.MOUSEBUTTONUP:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 x = pos[0] / 10
                 y = pos[1] / 10
                 for tribute in me.tributes:
                     if (x,y) == tribute.state:
-                        me.PAUSED = True
-                        print tribute.attributes
+                        me.curTrib = tribute
         if not me.PAUSED:
             for tribute in me.tributes:
                 #print tribute.state
@@ -228,5 +227,6 @@ class GameEngine(object):
         hide = Goal("hide", hideStats)
         getweapon = Goal("getweapon", getWeaponStats)
         ally = Goal("ally", allyStats)
+        fear = Goal("fear", 0)
 
-        return [hunger, thirst, rest, kill, hide, getweapon, ally]
+        return [hunger, thirst, rest, kill, hide, getweapon, ally, fear]
