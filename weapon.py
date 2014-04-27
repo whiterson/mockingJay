@@ -1,4 +1,5 @@
 import random
+from weaponInfo import weaponInfo
 
 class weapon:
     def __init__(self, type):
@@ -8,46 +9,17 @@ class weapon:
         self.isRanged = False
         self.range = 1
         self.damage = 0
+        self.selfConstructed = False
+        self.usesLeft = 50
 
         self.findDamage()
         self.setRanged()
+        self.weaponInfo = weaponInfo()
 
 
     def findDamage(self):
-        if self.isRanged:
-            if(self.type == 'bow'):
-                self.damage = random.randint(1,6)
-                self.damageCap = 6
-            else:
-                self.damage = random.randint(1,3)
-                self.damageCap = 3
-        else:
-            if(self.type == 'hammer'):
-                self.damage = random.randint(1,5)
-                self.damageCap = 5
-            elif(self.type == 'mace'):
-                self.damage = random.randint(1,6)
-                self.damageCap = 6
-            elif(self.type == 'trident'):
-                self.damage = random.randint(1, 6)
-                self.damageCap = 6
-            elif(self.type == 'spear'):
-                self.damage = random.randint(1,5)
-                self.damageCap = 5
-            elif(self.type == 'axe'):
-                self.damage = random.randint(1,5)
-                self.damageCap = 5
-            elif(self.type == 'sword'):
-                self.damage = random.randint(1, 6)
-                self.damageCap = 6
-            elif(self.type == 'dagger'):
-                self.damage = random.randint(1, 4)
-                self.damageCap = 4
-            #Some Sort of Error. Set to D5
-            else:
-                self.damage = random.randint(1,5)
-                self.damageCap = 5
-
+        self.damage = random.randint(1,weaponInfo.weaponStrength(self.type))
+        self.damageCap = weaponInfo.weaponStrength(self.type)
 
 
     def isInRange(self, distToTarget):
@@ -68,15 +40,13 @@ class weapon:
     def setRanged(self):
         if(self.type == 'bow'):
             self.isRanged = True
-            self.range = 7
         elif(self.type == 'slingshot'):
             self.isRanged = True
-            self.range = 5
         elif(self.type == 'blowgun'):
             self.isRanged = True
-            self.range = 4
         else:
             self.isRanged = False
+        self.range = weaponInfo.weaponRange(self.type)
 
     def getRanged(self):
         return self.isRanged
