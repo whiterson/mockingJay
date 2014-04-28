@@ -14,6 +14,32 @@ class weaponInfo:
         self.error = []
 
 
+    def weaponType(self, num):
+        if(num == 1):
+            res = 'bow'
+        elif(num == 2):
+            res= 'slingshot'
+        elif(num == 3):
+            res = 'blowgun'
+        elif(num == 4):
+            res = 'hammer'
+        elif(num == 5):
+            res = 'mace'
+        elif(num == 6):
+            res= 'trident'
+        elif(num == 7):
+            res = 'spear'
+        elif(num == 8):
+            res = 'axe'
+        elif(num == 9):
+            res = 'sword'
+        elif(num == 10):
+            res = 'dagger'
+        else:
+            res = None
+
+        return res
+
     def weaponStrength(self, type):
         if(type == 'bow'):
             strength = 6

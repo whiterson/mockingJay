@@ -16,7 +16,16 @@ FIGHT_STATE = {'not_fighting': 0, 'fleeing': 1, 'fighting': 2}
 
 class Tribute(Particle):
     #Goals = list of goals for tribute
-    #actions = list of possible actions tribute can do
+    ################ ACTIONS
+    # movement l,r,u,d
+    # hunt
+    # fight
+    # scavenge
+    # craft
+    # hide
+    # water
+    # rest
+    # talk
     def __init__(self, goals, actions, x=0, y=0, district='d12', gender='male', do_not_load=False):
 
         Particle.__init__(self, (x, y), 1, 1)
@@ -29,9 +38,10 @@ class Tribute(Particle):
 
         self.district = district
         self.has_weapon = False
-        self.weapon = 'none'
+        self.weapon = weapon(None)
         self.has_ally = False
         self.allies = []
+        self.craftPouch = []
         self.fighting_state = FIGHT_STATE['not_fighting']
         self.opponent = None
         self.last_opponent = None
@@ -217,7 +227,7 @@ class Tribute(Particle):
         damage = 0
         # with weapon 1d6 damage + 1d(str/2) + 1
         if self.has_weapon:
-            damage = random.randrange(1, 7) + random.randrange(1, self.attributes['strength'] / 2) + 1
+            damage = self.weapon.damage + random.randrange(1, self.attributes['strength'] / 4) + random.randint(0, self.attributes['weapon_skill']/2)+ 1
         else:  # without, 1d2 damage + 1d(str)
             damage = random.randrange(1, 3) + random.randrange(1, self.attributes['strength'] + 1)
         draw = random.random()
@@ -285,7 +295,9 @@ class Tribute(Particle):
                     if rand <= water_prob:
                         goal.value -= action.values[0]
         elif action.index == 9: #rest
-            pass
+            for goal in self.goals:
+                if goal.name == "rest":
+                    goal.value -= action.values[0]
 
     def calc_disc(self, gameMap):
         ret = 0
@@ -410,3 +422,14 @@ class Tribute(Particle):
             return self.killedBy
         else:
             return None
+
+    def getWeapon(self, game_map):
+        location = game_map[self.state[0]][self.state[1]]
+        terrChance = location.weaponChance()
+        if(random.randint(1, 100) <= 100*terrChance):
+            self.has_weapon = True
+            weaponType = random.randint(1, 10)
+            self.weapon = weapon(self.weaponInfo.weaponType(weaponType))
+        else:
+            self.has_weapon = False
+            self.weapon = weapon(None)

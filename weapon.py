@@ -8,18 +8,17 @@ class weapon:
         self.damageCap = 0
         self.isRanged = False
         self.range = 1
-        self.damage = 0
+        self.damage = self.findDamage()
         self.selfConstructed = False
         self.usesLeft = 50
 
-        self.findDamage()
         self.setRanged()
         self.weaponInfo = weaponInfo()
+        self.damageCap = weaponInfo.weaponStrength(self.type)
 
 
     def findDamage(self):
-        self.damage = random.randint(1,weaponInfo.weaponStrength(self.type))
-        self.damageCap = weaponInfo.weaponStrength(self.type)
+        return random.randint(1,weaponInfo.weaponStrength(self.type))
 
 
     def isInRange(self, distToTarget):
@@ -115,7 +114,7 @@ class weapon:
             damage += 4
 
         elif((not wepAgainst.isRanged) and self.isRanged):
-            damage += 4
+            damage -= 1
 
         elif(wepAgainst.isRanged and self.isRanged):
             if(weapon == 'slingshot'):
