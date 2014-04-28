@@ -50,7 +50,7 @@ class Tribute(Particle):
 
         self.weaponInfo = weaponInfo()
         self.wepCanCraft = None
-        self.bestScavChoice = None
+        self.bestScavChoice = ''
         self.bestScavPoints = 0
 
         if do_not_load:
@@ -109,6 +109,8 @@ class Tribute(Particle):
         n.sighted = self.sighted
         n.last_action = self.last_action
         n.last_opponent = self.last_opponent
+        n.bestScavChoice = self.bestScavChoice
+        n.bestScavPoints = self.bestScavPoints
         return n
 
     def __repr__(self):
@@ -266,8 +268,9 @@ class Tribute(Particle):
             self.fighting_state = FIGHT_STATE['fleeing']
 
     def do_action(self, action, game_map):
+
         self.last_action = action
-        rand = random.randint(0, 1)
+        rand = (random.randint(1, 10))/10
         loc = game_map[self.state[0]][self.state[1]]
         if action.index >= 0 and action.index <= 3:  # moving so don't know what gonna do here
             loc.setTribute(None)
@@ -293,6 +296,7 @@ class Tribute(Particle):
                             goal.value -= action.values[0]
                     else:
                         #doCraftScavenge will return zero if you fail to find something, and one if you succeed
+                        num = self.checkCraftScavenge(game_map)
                         goal.value -= self.bestScavPoints * self.doCraftScavenge(game_map, self.bestScavChoice)
         elif action.index == 7:  # craft
             ##Crafting Probability is factored into doCraftWeapon
@@ -455,29 +459,38 @@ class Tribute(Particle):
     def checkCraftScavenge(self, game_map):
         self.bestScavChoice = None
         self.bestScavPoints = 0
-        possPoints = 0
         location = game_map[self.state[0]][self.state[1]]
         craftTypes = self.weaponInfo.craftTypes
+        bestPossPoints = 0
+        possPoints = 0
         for type in craftTypes:
-            possPoints += (self.retScavTypeProb(type, location) * 10)
-            if possPoints != 0:
+            poss = (self.retScavTypeProb(type, location) * 10)
+            if poss != 0:
                 mockPouch = copy.deepcopy(self.craftPouch)
+                ##If you've already got what you're scavenging for
+                for item in mockPouch:
+                    if item == type:
+                        possPoints = 0
+                        return possPoints
                 mockPouch.append(type)
                 for weapon in self.weaponInfo.weaponList:
+                    possPoints = 0
                     canCraft = self.weaponInfo.canCraft(weapon,mockPouch)
                     if canCraft:
-                        possPoints += 5 + self.weaponInfo.weaponStrength(weapon)
+                        possPoints += 3 + (self.weaponInfo.weaponStrength(weapon)/2)
                         if possPoints > self.bestScavPoints:
                             self.bestScavPoints = possPoints
                             self.bestScavChoice = type
+                            bestPossPoints = possPoints
                     else:
                         numItemsNeedToCraft = len(self.weaponInfo.itemsNeededToCraft(weapon,mockPouch))
-                        possPoints = 5 - numItemsNeedToCraft + self.weaponInfo.weaponStrength(weapon)
+                        possPoints += 5 - numItemsNeedToCraft + (self.weaponInfo.weaponStrength(weapon)/10)
                         if possPoints > self.bestScavPoints:
                             self.bestScavPoints = possPoints
                             self.bestScavChoice = type
+                            bestPossPoints = possPoints
 
-        return possPoints
+        return bestPossPoints
 
     def doCraftScavenge(self, game_map, type):
         loc = game_map[self.state[0]][self.state[1]]
