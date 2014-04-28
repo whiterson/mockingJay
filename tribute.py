@@ -49,6 +49,7 @@ class Tribute(Particle):
         self.last_action = None
 
         self.weaponInfo = weaponInfo()
+        self.wepCanCraft = None
 
         if do_not_load:
             self.attributes = None
@@ -292,11 +293,16 @@ class Tribute(Particle):
                         #doCraftScavenge will return some meaningful number.... still deciding what... :P
                         goal.value -= action.values[0]/self.doCraftScavenge(game_map)
         elif action.index == 7:  # craft
-            craft_prob = loc.getSharpStoneChance()
-            for goal in self.goals:
-                if goal.name == "getweapon":
-                    if rand <= craft_prob:
-                        goal.value -= action.values[0]
+            ##Crafting Probability is factored into doCraftWeapon
+            if self.wepCanCraft != None:
+                for goal in self.goals:
+                    if goal.name == "getweapon":
+                        ## Returns boolean if you did it or not
+                        crafted = self.doCraftWeapon(game_map, self.wepCanCraft)
+                        if crafted:
+                            goal.value -= action.values[0]
+                        else:
+                            goal.value -= (10/self.attributes['crafting_skill'])
         elif action.index == 8:  # get water
             water_prob = loc.getWaterChance()
             for goal in self.goals:
@@ -399,10 +405,10 @@ class Tribute(Particle):
                     else:
                         goal.value -= self.checkCraftScavenge(gameMap)
         elif(action.index == 7): #craft
-            craftProb = loc.getSharpStoneChance()
+            craftProb = self.checkCraftWeapon()
             for goal in self.goals:
                 if goal.name == "getweapon":
-                    goal.value -= craftProb* action.values[0]
+                    goal.value -= craftProb * action.values[0]
         elif(action.index == 8): #getwater
             waterProb = loc.getWaterChance()
             for goal in self.goals:
@@ -459,3 +465,47 @@ class Tribute(Particle):
 
 
         return cValue
+
+    #Returns the probability of Crafting a Weapon based on your items & skill
+    def checkCraftWeapon(self):
+        probCraft = self.attributes['crafting_skill']/10
+
+        craftableWeapon = None
+        maxWepStrength = 0
+        numItemsCraftWep = 0
+        canCraft = 0
+
+        for wepType in self.weaponInfo.weaponList:
+            ans = self.weaponInfo.canCraft(wepType, self.craftPouch)
+            if(ans):
+                canCraft = 1
+                strength = self.weaponInfo.weaponStrength(wepType)
+                if strength > maxWepStrength:
+                    maxWepStrength = strength
+                    numItemsCraftWep = self.weaponInfo.totalNumItemsToCraft(wepType)
+                    craftableWeapon = wepType
+                elif strength == maxWepStrength:
+                    if self.weaponInfo.totalNumItemsToCraft(wepType) < numItemsCraftWep:
+                        maxWepStrength = strength
+                        numItemsCraftWep = self.weaponInfo.totalNumItemsToCraft(wepType)
+                        craftableWeapon = wepType
+
+        self.wepCanCraft = craftableWeapon
+        return probCraft*canCraft
+
+    def doCraftWeapon(self, game_map, wepToCraft):
+        itemsUsed = self.weaponInfo.totalItemsToCraft(wepToCraft)
+        for needed in itemsUsed:
+            for supply in self.craftPouch:
+                if needed == supply:
+                    self.craftPouch.remove(supply)
+        chance = random.randint(1,10)
+        if chance <= self.attributes['crafting_skill']:
+            crafted = True
+            self.weapon = wepToCraft
+        else:
+            crafted = False
+
+        self.wepCanCraft = None
+        self.has_weapon = crafted
+        return crafted

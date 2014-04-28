@@ -11,6 +11,7 @@ class weaponInfo:
         self.sword = []
         self.dagger = ['sharpStone', 'longGrass']
         self.craftTypes = ['shortStick', 'longStick', 'sharpStone', 'broadStone', 'pebbles', 'feather', 'vine', 'reeds', 'longGrass', 'thorns']
+        self.weaponList['bow', 'slingshot', 'blowgun', 'hammer', 'mace', 'trident', 'spear', 'axe', 'sword', 'dagger']
         self.error = []
 
 
@@ -77,6 +78,7 @@ class weaponInfo:
             range = 1
         return range
 
+    ## Returns full list of items needed to craft a certain weapon
     def totalItemsToCraft(self, type):
         if(type == 'bow'):
             return self.bow
