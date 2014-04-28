@@ -281,7 +281,11 @@ class Tribute(Particle):
             self.sighted.engage_in_combat(self)
             self.goals[3].value = max(self.goals[3].value - action.values[0], 0)
         elif action.index == 6:  # scavenger
-            pass
+            wep_prob = loc.getWeaponChance()
+            for goal in self.goals:
+                if goal.name == "getweapon":
+                    if rand <= wep_prob:
+                        goal.value -= action.values[0]
         elif action.index == 7:  # craft
             craft_prob = loc.getSharpStoneChance()
             for goal in self.goals:
@@ -382,9 +386,10 @@ class Tribute(Particle):
                     goal.value -= weakness
                     if weakness < 1:
                         goal.value -= 11
-
         elif(action.index == 6): #scavenger
-            blah = 0
+            for goal in self.goals:
+                if goal.name == "getweapon":
+                    goal.value -= loc.getWeaponChance() * action.values[0]
         elif(action.index == 7): #craft
             craftProb = loc.getSharpStoneChance()
             for goal in self.goals:
@@ -396,7 +401,9 @@ class Tribute(Particle):
                 if goal.name == "thirst":
                     goal.value -= waterProb* action.values[0]
         elif(action.index == 9): #rest
-            blah = 0
+            for goal in self.goals:
+                if goal.name == "rest":
+                    goal.value -= action.values[0]
 
     def calc_discomfort(self):
         val = 0
