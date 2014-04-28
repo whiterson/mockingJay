@@ -106,8 +106,12 @@ class Tribute(Particle):
         if self.fighting_state == FIGHT_STATE['not_fighting']:
             self.fighting_state = FIGHT_STATE['fighting']
             self.opponent = t
+            self.last_opponent = self.opponent
             t.engage_in_combat(self)
             print str(self) + ' is engaging in combat with ' + str(t) + '!'
+        elif self.fighting_state == FIGHT_STATE['fleeing']:
+            self.opponent = t
+            print str(self) + ' is being chased by ' + str(t) + '!'
 
     def disengage_in_combat(self, t):
         if self.fighting_state != FIGHT_STATE['not_fighting']:
@@ -155,7 +159,7 @@ class Tribute(Particle):
             self.killed = True
             self.killedBy = self.opponent
             print str(self) + ' was killed by ' + str(self.killedBy)
-            self.disengage_in_combat(self.opponent)
+            self.disengage_in_combat((self.opponent or self.killedBy or self.last_opponent))
 
     #Need to figure out exactly how far
     #/ how we want to handle depth in this function
@@ -265,6 +269,7 @@ class Tribute(Particle):
                         goal.value -= action.values[0]
         elif action.index == 5:  # kill
             self.sighted.engage_in_combat(self)
+            self.goals[3].value = max(self.goals[3].value - action.values[0], 0)
         elif action.index == 6:  # scavenger
             pass
         elif action.index == 7:  # craft
@@ -318,7 +323,9 @@ class Tribute(Particle):
             if goal.name == "rest":
                 goal.value += (1/self.attributes['stamina'] + self.goals[0].value/50 + self.goals[1].value/30)
             if goal.name == 'fear':
-                goal.value -= 1
+                goal.value = max(goal.value - 0.1, 0)
+                if goal.value < 4 and self.fighting_state == FIGHT_STATE['fleeing']:
+                    self.fighting_state = FIGHT_STATE['not_fighting']
 
 
     #Action will update the state of the world by calculating
@@ -328,14 +335,14 @@ class Tribute(Particle):
         loc = gameMap[self.state[0]][self.state[1]]
         if 3 >= action.index >= 0:  # moving so don't know what gonna do here
             distance_before = 0
-            if self.opponent:
+            if self.last_opponent and self.fighting_state == FIGHT_STATE['fleeing']:
                 distance_before = abs(self.state[0] - self.last_opponent.state[0]) + \
                                   abs(self.state[1] + self.last_opponent.state[1])
             self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.map_dims[0],
                           (self.state[1] + action.delta_state[1]) % engine.GameEngine.map_dims[1])
 
             distance_after = 1
-            if self.opponent:
+            if self.last_opponent and self.fighting_state == FIGHT_STATE['fleeing']:
                 distance_after = abs(self.state[0] - self.last_opponent.state[0]) + \
                                  abs(self.state[1] + self.last_opponent.state[1])
 
@@ -352,7 +359,7 @@ class Tribute(Particle):
         elif action.index == 5: #kill
             for goal in self.goals:
                 if goal.name == "kill":
-                    goal.value -= action.values[0]
+                    goal.value = max(self.goals[3].value - action.values[0], 0)
                 if goal.name == "fear":
                     if self.surmise_enemy_hit(self.sighted) > self.surmise_enemy_hit(self):
                         goal.value += 10

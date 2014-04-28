@@ -102,7 +102,7 @@ class GameEngine(object):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return False
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                 pos = pygame.mouse.get_pos()
                 x = pos[0] / 10
                 y = pos[1] / 10
@@ -120,6 +120,8 @@ class GameEngine(object):
                     me.tributes.remove(tribute)
             me.view.render(me.state, me.curTrib, me.tributes_by_district)
             me.state.update()
+        else:
+            me.view.render(me.state, me.curTrib, me.tributes_by_district)
         return True
 
     @staticmethod
@@ -209,7 +211,7 @@ class GameEngine(object):
         else:
             killBase = 1
         killLimit = killBase + ((tribute.attributes['bloodlust']-1)*2) + (11/tribute.attributes['friendliness']) + ((tribute.attributes['size']-1)/2) + ((tribute.attributes['fighting_skill']-1)/2) + ((tribute.attributes['strength']-1)/2)
-        killStats = randint(killBase, killLimit)
+        killStats = randint(killBase, killLimit) * 10
 
         if(tribute.attributes['size'] + tribute.attributes['strength']) < 4:
             hideBase = 10

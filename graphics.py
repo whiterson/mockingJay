@@ -100,3 +100,8 @@ class GameView(object):
                                            str(tribute.attributes['max_health']), 1, (255, 255, 255)), (650, 240))
         self.screen.blit(fontobject.render('Last Action: ' + str(tribute.last_action), 1, (255, 255, 255)), (510, 275))
         self.screen.blit(fontobject.render('Fighting: ' + str(tribute.fighting_state), 1, (255, 255, 255)), (510, 315))
+        self.screen.blit(fontobject.render('****************GOALS*****************', 1, (255, 255, 255)), (505, 350))
+
+        for i, goal in enumerate(tribute.goals):
+            self.screen.blit(fontobject.render(goal.name + ': ' + str(goal.value), 1, (255, 255, 255)), (510 + 140 * (i % 2), 385 + (35 * (i / 2))))
+
