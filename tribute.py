@@ -50,6 +50,8 @@ class Tribute(Particle):
 
         self.weaponInfo = weaponInfo()
         self.wepCanCraft = None
+        self.bestScavChoice = None
+        self.bestScavPoints = 0
 
         if do_not_load:
             self.attributes = None
@@ -290,8 +292,8 @@ class Tribute(Particle):
                             self.getWeapon()
                             goal.value -= action.values[0]
                     else:
-                        #doCraftScavenge will return some meaningful number.... still deciding what... :P
-                        goal.value -= action.values[0]/self.doCraftScavenge(game_map)
+                        #doCraftScavenge will return zero if you fail to find something, and one if you succeed
+                        goal.value -= self.bestScavPoints * self.doCraftScavenge(game_map, self.bestScavChoice)
         elif action.index == 7:  # craft
             ##Crafting Probability is factored into doCraftWeapon
             if self.wepCanCraft != None:
@@ -400,7 +402,7 @@ class Tribute(Particle):
             wepChance = loc.getWeaponChance()
             for goal in self.goals:
                 if goal.name == "getweapon":
-                    if wepChance > 0:
+                    if wepChance > 0.9:
                         goal.value -= wepChance * action.values[0]
                     else:
                         goal.value -= self.checkCraftScavenge(gameMap)
@@ -445,26 +447,74 @@ class Tribute(Particle):
             return None
 
     def getWeapon(self, game_map):
-        location = game_map[self.state[0]][self.state[1]]
-        terrChance = location.weaponChance()
         self.has_weapon = True
         weaponType = random.randint(1, 10)
         self.weapon = weapon(self.weaponInfo.weaponType(weaponType))
 
 
     def checkCraftScavenge(self, game_map):
+        self.bestScavChoice = None
+        self.bestScavPoints = 0
         possPoints = 0
         location = game_map[self.state[0]][self.state[1]]
-
+        craftTypes = self.weaponInfo.craftTypes
+        for type in craftTypes:
+            possPoints += (self.retScavTypeProb(type, location) * 10)
+            if possPoints != 0:
+                mockPouch = copy.deepcopy(self.craftPouch)
+                mockPouch.append(type)
+                for weapon in self.weaponInfo.weaponList:
+                    canCraft = self.weaponInfo.canCraft(weapon,mockPouch)
+                    if canCraft:
+                        possPoints += 5 + self.weaponInfo.weaponStrength(weapon)
+                        if possPoints > self.bestScavPoints:
+                            self.bestScavPoints = possPoints
+                            self.bestScavChoice = type
+                    else:
+                        numItemsNeedToCraft = len(self.weaponInfo.itemsNeededToCraft(weapon,mockPouch))
+                        possPoints = 5 - numItemsNeedToCraft + self.weaponInfo.weaponStrength(weapon)
+                        if possPoints > self.bestScavPoints:
+                            self.bestScavPoints = possPoints
+                            self.bestScavChoice = type
 
         return possPoints
 
-    def doCraftScavenge(self, game_map):
-        cValue = 1
-        location = game_map[self.state[0]][self.state[1]]
-
-
+    def doCraftScavenge(self, game_map, type):
+        loc = game_map[self.state[0]][self.state[1]]
+        crTyProb = self.retScavTypeProb(type, loc)
+        chance = random.randint(1, 10)
+        if chance <= (10*crTyProb):
+            cValue = 1
+            self.craftPouch.append(type)
+        else:
+            cValue = 0
         return cValue
+
+    def retScavTypeProb(self, type, loc):
+        if type == 'shortStick':
+            crTyProb = loc.shortStickChance
+        elif type == 'sharpStone':
+            crTyProb = loc.sharpStoneChance
+        elif type == 'feather':
+            crTyProb = loc.featherChance
+        elif type == 'vine':
+            crTyProb = loc.vineChance
+        elif type == 'longStick':
+            crTyProb = loc.longStickChance
+        elif type == 'broadStone':
+            crTyProb  = loc.broadStoneChance
+        elif type == 'longGrass':
+            crTyProb  = loc.longGrassChance
+        elif type == 'reeds':
+            crTyProb  = loc.reedsChance
+        elif type == 'pebbles':
+            crTyProb  = loc.pebblesChance
+        elif type == 'thorns':
+            crTyProb = loc.thornsChance
+        else:
+            crTyProb = 0
+
+        return crTyProb
 
     #Returns the probability of Crafting a Weapon based on your items & skill
     def checkCraftWeapon(self):
@@ -493,6 +543,7 @@ class Tribute(Particle):
         self.wepCanCraft = craftableWeapon
         return probCraft*canCraft
 
+    #Craft the weapon based on your skill. If you fail to craft, you still lose the items. Wah-wah.
     def doCraftWeapon(self, game_map, wepToCraft):
         itemsUsed = self.weaponInfo.totalItemsToCraft(wepToCraft)
         for needed in itemsUsed:

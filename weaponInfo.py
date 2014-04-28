@@ -11,7 +11,7 @@ class weaponInfo:
         self.sword = []
         self.dagger = ['sharpStone', 'longGrass']
         self.craftTypes = ['shortStick', 'longStick', 'sharpStone', 'broadStone', 'pebbles', 'feather', 'vine', 'reeds', 'longGrass', 'thorns']
-        self.weaponList['bow', 'slingshot', 'blowgun', 'hammer', 'mace', 'trident', 'spear', 'axe', 'sword', 'dagger']
+        self.weaponList = ['bow', 'slingshot', 'blowgun', 'hammer', 'mace', 'trident', 'spear', 'axe', 'sword', 'dagger']
         self.error = []
 
 
@@ -128,7 +128,7 @@ class weaponInfo:
             return len(self.error)
 
     def canCraft(self, type, items):
-        itemList = self.itemsToCraft(type)
+        itemList = self.totalItemsToCraft(type)
         tribItems = items
         ans = False
         if(type == 'sword'):
@@ -148,18 +148,17 @@ class weaponInfo:
         return ans
 
     def itemsNeededToCraft(self, type, items):
-        itemList = self.itemsToCraft(type)
+        itemList = self.totalItemsToCraft(type)
         tribItems = items
         ans = []
         if(type == 'sword'):
             return []
-        match = 0
         for needed in itemList:
+            match = 0
             for item in tribItems:
                 if item == needed:
                     match = 1
             if match == 0:
                 ans.append(needed)
-            else:
-                match = 1
+
         return ans

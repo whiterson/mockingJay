@@ -4,6 +4,7 @@ from weaponInfo import weaponInfo
 class weapon:
     def __init__(self, type):
         ## All weapons start w/ a base d, and they gain or lose depending on what kind of weapon they're fighting against
+        self.weaponInfo = weaponInfo()
         self.type = type
         self.damageCap = 0
         self.isRanged = False
@@ -13,12 +14,11 @@ class weapon:
         self.usesLeft = 50
 
         self.setRanged()
-        self.weaponInfo = weaponInfo()
-        self.damageCap = weaponInfo.weaponStrength(self.type)
+        self.damageCap = self.weaponInfo.weaponStrength(self.type)
 
 
     def findDamage(self):
-        return random.randint(1,weaponInfo.weaponStrength(self.type))
+        return random.randint(1,self.weaponInfo.weaponStrength(self.type))
 
 
     def isInRange(self, distToTarget):
@@ -45,7 +45,7 @@ class weapon:
             self.isRanged = True
         else:
             self.isRanged = False
-        self.range = weaponInfo.weaponRange(self.type)
+        self.range = self.weaponInfo.weaponRange(self.type)
 
     def getRanged(self):
         return self.isRanged
