@@ -284,8 +284,13 @@ class Tribute(Particle):
             wep_prob = loc.getWeaponChance()
             for goal in self.goals:
                 if goal.name == "getweapon":
-                    if rand <= wep_prob:
-                        goal.value -= action.values[0]
+                    if wep_prob > 0.9:
+                        if rand <= wep_prob:
+                            self.getWeapon()
+                            goal.value -= action.values[0]
+                    else:
+                        #doCraftScavenge will return some meaningful number.... still deciding what... :P
+                        goal.value -= action.values[0]/self.doCraftScavenge(game_map)
         elif action.index == 7:  # craft
             craft_prob = loc.getSharpStoneChance()
             for goal in self.goals:
@@ -381,15 +386,18 @@ class Tribute(Particle):
                         goal.value += 10
                     if self.surmise_escape_turns(self.sighted) < 5:
                         goal.value += 10
-
                     weakness = self.surmise_enemy_weakness(self.sighted)
                     goal.value -= weakness
                     if weakness < 1:
                         goal.value -= 11
         elif(action.index == 6): #scavenger
+            wepChance = loc.getWeaponChance()
             for goal in self.goals:
                 if goal.name == "getweapon":
-                    goal.value -= loc.getWeaponChance() * action.values[0]
+                    if wepChance > 0:
+                        goal.value -= wepChance * action.values[0]
+                    else:
+                        goal.value -= self.checkCraftScavenge(gameMap)
         elif(action.index == 7): #craft
             craftProb = loc.getSharpStoneChance()
             for goal in self.goals:
@@ -433,10 +441,21 @@ class Tribute(Particle):
     def getWeapon(self, game_map):
         location = game_map[self.state[0]][self.state[1]]
         terrChance = location.weaponChance()
-        if(random.randint(1, 100) <= 100*terrChance):
-            self.has_weapon = True
-            weaponType = random.randint(1, 10)
-            self.weapon = weapon(self.weaponInfo.weaponType(weaponType))
-        else:
-            self.has_weapon = False
-            self.weapon = weapon(None)
+        self.has_weapon = True
+        weaponType = random.randint(1, 10)
+        self.weapon = weapon(self.weaponInfo.weaponType(weaponType))
+
+
+    def checkCraftScavenge(self, game_map):
+        possPoints = 0
+        location = game_map[self.state[0]][self.state[1]]
+
+
+        return possPoints
+
+    def doCraftScavenge(self, game_map):
+        cValue = 1
+        location = game_map[self.state[0]][self.state[1]]
+
+
+        return cValue
