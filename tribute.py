@@ -219,6 +219,24 @@ class Tribute(Particle):
                 if v < best_action[1]:
                     best_action = (a, v)
 
+            for goal in self.goals:
+                rand = random.randint(0,2)
+                #very hungry and slightly hungry
+                if goal.name == 'hunger' and ((goal.value > 22 and goal.value < 26) or (goal.value >13 and goal.value <16)):
+                    best_action = (self.actions[rand], 100)
+                    break
+
+
+                #very thirsty and slightly thirsty
+                if goal.name == 'thirst' and ((goal.value > 22 and goal.value < 26) or (goal.value>13 and goal.value < 16)):
+                    best_action = (self.actions[rand], 100)
+                    break
+
+                #very tired and slightly tired
+                if goal.name == 'rest' and goal.value >= 33 and goal.value <37:
+                    best_action = (self.actions[rand], 100)
+                    break
+
             if self.fighting_state == FIGHT_STATE['fleeing']:
                 pass
 
@@ -285,7 +303,7 @@ class Tribute(Particle):
             for goal in self.goals:
                 if goal.name == "hunger":
                     if rand <= food_prob:
-                        goal.value -= action.values[0]
+                        goal.value -= action.values[0]*3
         elif action.index == 5:  # kill
             self.sighted.engage_in_combat(self)
             self.goals[3].value = max(self.goals[3].value - action.values[0], 0)
@@ -376,11 +394,11 @@ class Tribute(Particle):
                 if goal.name == "ally":
                     goal.value += 0.05 / (len(self.allies) + 1)**2
             if goal.name == "hunger":
-                goal.value += ((1/self.attributes['endurance']) + (self.attributes['size']/5))
+                goal.value += ((1.0/self.attributes['endurance']) + (self.attributes['size']/5.0))
             if goal.name == "thirst":
-                goal.value += 1/self.attributes['endurance']
+                goal.value += 1.0/self.attributes['endurance']
             if goal.name == "rest":
-                goal.value += (1/self.attributes['stamina'] + self.goals[0].value/50 + self.goals[1].value/30)
+                goal.value += (1.0/self.attributes['stamina'] + self.goals[0].value/50.0 + self.goals[1].value/30.0)
             if goal.name == 'fear':
                 goal.value = max(goal.value - 0.1, 0)
                 if goal.value < 4 and self.fighting_state == FIGHT_STATE['fleeing']:
@@ -466,14 +484,14 @@ class Tribute(Particle):
     def checkDead(self):
         for goal in self.goals:
             if goal.name == "hunger":
-                if goal.value >= 150:
+                if goal.value >= 35:
                     return " starvation "
             #You get thirsty a lot faster than you get hungry
             if goal.name == "thirst":
-                if goal.value >= 100:
+                if goal.value >= 35:
                     return " terminal dehydration "
             if goal.name == "rest":
-                if goal.value >= 300:
+                if goal.value >= 40:
                     return " exhaustion "
 
         if self.killed:
@@ -500,27 +518,30 @@ class Tribute(Particle):
             if poss != 0:
                 mockPouch = copy.deepcopy(self.craftPouch)
                 ##If you've already got what you're scavenging for
+                already_have = 0
                 for item in mockPouch:
                     if item == type:
+                        already_have = 1
+                if(already_have == 0):
+                    mockPouch.append(type)
+                    for weapon in self.weaponInfo.weaponList:
                         possPoints = 0
-                        return possPoints
-                mockPouch.append(type)
-                for weapon in self.weaponInfo.weaponList:
-                    possPoints = 0
-                    canCraft = self.weaponInfo.canCraft(weapon,mockPouch)
-                    if canCraft:
-                        possPoints += 3 + (self.weaponInfo.weaponStrength(weapon)/2)
-                        if possPoints > self.bestScavPoints:
-                            self.bestScavPoints = possPoints
-                            self.bestScavChoice = type
-                            bestPossPoints = possPoints
-                    else:
-                        numItemsNeedToCraft = len(self.weaponInfo.itemsNeededToCraft(weapon,mockPouch))
-                        possPoints += 5 - numItemsNeedToCraft + (self.weaponInfo.weaponStrength(weapon)/10)
-                        if possPoints > self.bestScavPoints:
-                            self.bestScavPoints = possPoints
-                            self.bestScavChoice = type
-                            bestPossPoints = possPoints
+                        canCraft = self.weaponInfo.canCraft(weapon,mockPouch)
+                        if canCraft:
+                            possPoints += 3 + (self.weaponInfo.weaponStrength(weapon)/2)
+                            if possPoints > self.bestScavPoints:
+                                self.bestScavPoints = possPoints
+                                self.bestScavChoice = type
+                                bestPossPoints = possPoints
+                        else:
+                            numItemsNeedToCraft = len(self.weaponInfo.itemsNeededToCraft(weapon,mockPouch))
+                            possPoints += 5 - numItemsNeedToCraft + (self.weaponInfo.weaponStrength(weapon)/10)
+                            if possPoints > self.bestScavPoints:
+                                self.bestScavPoints = possPoints
+                                self.bestScavChoice = type
+                                bestPossPoints = possPoints
+                else:
+                    bestPossPoints = 0
 
         return bestPossPoints
 
