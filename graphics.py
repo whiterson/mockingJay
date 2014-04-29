@@ -20,7 +20,7 @@ class GameView(object):
         self.layers['particle'][0].set_colorkey((255, 0, 255))
         self.layers['particle'][0].fill((255, 0, 255))
 
-    def draw(self, tribute, tributes):
+    def draw(self, tribute, tributes, alive):
         self.layers['particle'][0].fill((255, 0, 255))
         if bool(self.state):
             for layer in self.layers:
@@ -33,25 +33,25 @@ class GameView(object):
             self.screen.blit(layer[1][0], (0, 0))
 
         self.textTribute(tribute)
-        self.textStats(tributes)
+        self.textStats(tributes, alive)
         pygame.display.flip()
 
-    def render(self, gs, tribute, tributes):
+    def render(self, gs, tribute, tributes, alive):
         """
         here, we set the game state to render
         @param gs: the game state to render
         """
         self.state = gs
-        self.draw(tribute, tributes)
+        self.draw(tribute, tributes, alive)
 
-    def textStats(self, tributes):
+    def textStats(self, tributes, alive):
         fontobject = pygame.font.SysFont('Arial', 18)
         s_x = 5
         s_y = 520
         for district, t1, t2 in tributes:
             self.screen.blit(fontobject.render('District ' + district[1:], 1, (255, 255, 255)), (s_x, s_y))
             color = ()
-            if t1.killed:
+            if t1 not in alive:
                 color = (255, 1, 0)
             else:
                 color = (0, 255, 1)
