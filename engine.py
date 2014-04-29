@@ -54,8 +54,8 @@ class GameEngine(object):
         #create the goals here
         #not really needed right now
 
-        init_locations = [(x, y) for x in range(10) for y in range(10)]
-        districts = ['d' + str(x) for x in range(1, 3)]
+        init_locations = [(x, y) for x in range(15,30) for y in range(15,35)]
+        districts = ['d' + str(x) for x in range(1, 7)]
 
         for d in districts:
             location = random.choice(init_locations)
@@ -125,7 +125,7 @@ class GameEngine(object):
                 if death is not None:
                     print tribute.first_name, " ", tribute.last_name, " death by ", death
                     me.tributes.remove(tribute)
-            me.view.render(me.state, me.curTrib, me.tributes_by_district)
+            me.view.render(me.state, me.curTrib, me.tributes_by_district, me.tributes)
             me.state.update()
         else:
             me.view.render(me.state, me.curTrib, me.tributes_by_district)

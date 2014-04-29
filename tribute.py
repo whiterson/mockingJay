@@ -218,24 +218,25 @@ class Tribute(Particle):
                 v = t.calc_min_discomfort(0, 2, gameMap, actions)
                 if v < best_action[1]:
                     best_action = (a, v)
+            thirst = 0
+            hung = 0
+            rest = 0
 
             for goal in self.goals:
                 rand = random.randint(0,2)
                 #very hungry and slightly hungry
                 if goal.name == 'hunger' and ((goal.value > 22 and goal.value < 26) or (goal.value >13 and goal.value <16)):
                     best_action = (self.actions[rand], 100)
-                    break
+                    hung = goal.value
 
 
                 #very thirsty and slightly thirsty
                 if goal.name == 'thirst' and ((goal.value > 22 and goal.value < 26) or (goal.value>13 and goal.value < 16)):
                     best_action = (self.actions[rand], 100)
-                    break
+                    thirst = goal.value
 
-                #very tired and slightly tired
-                if goal.name == 'rest' and goal.value >= 33 and goal.value <37:
-                    best_action = (self.actions[rand], 100)
-                    break
+            if self.goals[3].value >= 150 and thirst < 33 and hung < 33 and rest < 40:
+                best_action = (self.actions[rand+1], 100)
 
             if self.fighting_state == FIGHT_STATE['fleeing']:
                 pass
@@ -462,7 +463,7 @@ class Tribute(Particle):
             waterProb = loc.getWaterChance()
             self.goals[1].value -= waterProb * action.values[0]
         elif action.index == 9: #rest
-            self.goals[2].value -= action.values[0]
+            self.goals[2].value -= action.values[0]*3
         elif action.index == 11: # talk ally
             x = self.state[0]
             y = self.state[1]
@@ -484,14 +485,14 @@ class Tribute(Particle):
     def checkDead(self):
         for goal in self.goals:
             if goal.name == "hunger":
-                if goal.value >= 35:
+                if goal.value >= 45:
                     return " starvation "
             #You get thirsty a lot faster than you get hungry
             if goal.name == "thirst":
-                if goal.value >= 35:
+                if goal.value >= 45:
                     return " terminal dehydration "
             if goal.name == "rest":
-                if goal.value >= 40:
+                if goal.value >= 60:
                     return " exhaustion "
 
         if self.killed:
