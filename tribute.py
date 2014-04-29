@@ -217,7 +217,7 @@ class Tribute(Particle):
             if self.sighted and not self.sighted.killed:
                 actions = self.actions + [self.fight_action]
 
-            if self.goals[0].value > 90 or self.goals[1].value > 90:
+            if self.goals[0].value > 90 or self.goals[1].value > 20:
                 actions = self.actions + [self.explore_action]
 
             for a in actions:
@@ -301,7 +301,7 @@ class Tribute(Particle):
     def do_action(self, action, game_map):
 
         self.last_action = action
-        rand = (random.randint(1, 10))/10
+        rand = (random.randint(1, 10)) / 10
         loc = game_map[self.state[0]][self.state[1]]
         if action.index >= 0 and action.index <= 3:  # moving so don't know what gonna do here
             loc.setTribute(None)
@@ -315,10 +315,10 @@ class Tribute(Particle):
                 if goal.name == "hunger":
                     if rand <= food_prob:
                         goal.value -= action.values[0]*3
-        elif action.index == 5:  # kill
+        elif action.index == 5:  # fight
             self.sighted.engage_in_combat(self)
             self.goals[3].value = max(self.goals[3].value - action.values[0], 0)
-        elif action.index == 6:  # scavenger
+        elif action.index == 6:  # scavenge
             wep_prob = loc.getWeaponChance()
             for goal in self.goals:
                 if goal.name == "getweapon":
@@ -341,17 +341,22 @@ class Tribute(Particle):
                             goal.value -= action.values[0]
                         else:
                             goal.value -= (10/self.attributes['crafting_skill'])
-        elif action.index == 8:  # get water
+        elif action.index == 8:  # hide
+            pass
+        elif action.index == 9:  # get water
             water_prob = loc.getWaterChance()
             for goal in self.goals:
                 if goal.name == "thirst":
                     if rand <= water_prob:
                         goal.value -= action.values[0]
-        elif action.index == 9: #rest
+                        print 'drank'
+                    else:
+                        print 'didnt drink, prob: ', str(water_prob), ', draw: ', str(rand)
+        elif action.index == 10:  # rest
             for goal in self.goals:
                 if goal.name == "rest":
                     goal.value -= action.values[0]
-        elif action.index == 11: # talk ally
+        elif action.index == 11:  # talk ally
             f1 = self.attributes['friendliness']
             x = self.state[0]
             y = self.state[1]
@@ -373,7 +378,7 @@ class Tribute(Particle):
                     self.allies.append(targ)
                     targ.allies.append(self)
 
-        elif action.index == 12: # explore
+        elif action.index == 12:  # explore
             directions = mapReader.get_neighbors(game_map, self.state)
             evals = []
 
@@ -453,10 +458,10 @@ class Tribute(Particle):
 
             g = random.choice(self.goals)
             g.value -= -0.5
-        elif action.index == 4:#find food
+        elif action.index == 4:  # hunt
             foodProb = loc.getFoodChance()
             self.goals[0].value -= foodProb * action.values[0]
-        elif action.index == 5: #kill
+        elif action.index == 5:  # kill
 
             if abs(self.sighted.state[0] - self.state[0]) + abs(self.sighted.state[1] - self.state[1]) == 1:
                 self.goals[3].value = max(self.goals[3].value - action.values[0], 0)
@@ -470,20 +475,22 @@ class Tribute(Particle):
             if weakness < 1:
                 self.goals[7].value -= 11
 
-        elif action.index == 6: #scavenger
+        elif action.index == 6:  # scavenge
             wepChance = loc.getWeaponChance()
             if wepChance > 0.9:
                 self.goals[5].value -= wepChance * action.values[0]
             else:
                 self.goals[5].value -= self.checkCraftScavenge(gameMap)
 
-        elif action.index == 7: #craft
+        elif action.index == 7:  # craft
             craftProb = self.checkCraftWeapon()
             self.goals[5].value -= craftProb * action.values[0]
-        elif action.index == 8: #getwater
+        elif action.index == 8:  # hide
+            pass
+        elif action.index == 9:  # get_water
             waterProb = loc.getWaterChance()
-            self.goals[1].value -= waterProb**10 * action.values[0]
-        elif action.index == 9: #rest
+            self.goals[1].value -= waterProb * action.values[0]
+        elif action.index == 10:  # rest
             self.goals[2].value -= action.values[0]
         elif action.index == 11: # talk ally
             x = self.state[0]
@@ -495,7 +502,7 @@ class Tribute(Particle):
                (gameMap[x][(y + 1) % h].tribute is not None and gameMap[x][(y + 1) % h].tribute not in self.allies) or \
                (gameMap[x][(y - 1) % h].tribute is not None and gameMap[x][(y - 1) % h].tribute not in self.allies):
                 self.goals[6].value -= action.values[0]
-        elif action.index == 12:
+        elif action.index == 12:  # explore
             self.goals[0].value = max(self.goals[0].value - action.values[0], 0)
             self.goals[1].value = max(self.goals[1].value - action.values[1], 0)
 
