@@ -27,8 +27,8 @@ class Tribute(Particle):
     # rest
     # talk
     def __init__(self, goals, actions, x=0, y=0, district='d12', gender='male', do_not_load=False):
-
         Particle.__init__(self, (x, y), 1, 1)
+
         self.goals = goals
         self.actions = actions
 
@@ -367,6 +367,7 @@ class Tribute(Particle):
     #Goal updates and where it is / fuzzy logic of where other tributes are
     #will update current selfs world.
     def apply_action(self, action, gameMap):
+        # [hunger, thirst, rest, kill, hide, getweapon, ally, fear]
         loc = gameMap[self.state[0]][self.state[1]]
         if 3 >= action.index >= 0:  # moving so don't know what gonna do here
             distance_before = 0
@@ -387,46 +388,37 @@ class Tribute(Particle):
             g = random.choice(self.goals)
             g.value -= -0.5
         elif action.index == 4:#find food
-             foodProb = loc.getFoodChance()
-             for goal in self.goals:
-                if goal.name == "hunger":
-                    goal.value -= foodProb* action.values[0]
+            foodProb = loc.getFoodChance()
+            self.goals[0].value -= foodProb * action.values[0]
         elif action.index == 5: #kill
-            for goal in self.goals:
-                if goal.name == "kill":
-                    if abs(self.sighted.state[0] - self.state[0]) + abs(self.sighted.state[1] - self.state[1]) == 1:
-                        goal.value = max(self.goals[3].value - action.values[0], 0)
-                if goal.name == "fear":
-                    if self.surmise_enemy_hit(self.sighted) > self.surmise_enemy_hit(self):
-                        goal.value += 10
-                    if self.surmise_escape_turns(self.sighted) < 5:
-                        goal.value += 10
-                    weakness = self.surmise_enemy_weakness(self.sighted)
-                    goal.value -= weakness
-                    if weakness < 1:
-                        goal.value -= 11
-        elif(action.index == 6): #scavenger
+
+            if abs(self.sighted.state[0] - self.state[0]) + abs(self.sighted.state[1] - self.state[1]) == 1:
+                self.goals[3].value = max(self.goals[3].value - action.values[0], 0)
+
+            if self.surmise_enemy_hit(self.sighted) > self.surmise_enemy_hit(self):
+                self.goals[7].value += 10
+            if self.surmise_escape_turns(self.sighted) < 5:
+                self.goals[7].value += 10
+            weakness = self.surmise_enemy_weakness(self.sighted)
+            self.goals[7].value -= weakness
+            if weakness < 1:
+                self.goals[7].value -= 11
+
+        elif action.index == 6: #scavenger
             wepChance = loc.getWeaponChance()
-            for goal in self.goals:
-                if goal.name == "getweapon":
-                    if wepChance > 0.9:
-                        goal.value -= wepChance * action.values[0]
-                    else:
-                        goal.value -= self.checkCraftScavenge(gameMap)
-        elif(action.index == 7): #craft
+            if wepChance > 0.9:
+                self.goals[5].value -= wepChance * action.values[0]
+            else:
+                self.goals[5].value -= self.checkCraftScavenge(gameMap)
+
+        elif action.index == 7: #craft
             craftProb = self.checkCraftWeapon()
-            for goal in self.goals:
-                if goal.name == "getweapon":
-                    goal.value -= craftProb * action.values[0]
-        elif(action.index == 8): #getwater
+            self.goals[5].value -= craftProb * action.values[0]
+        elif action.index == 8: #getwater
             waterProb = loc.getWaterChance()
-            for goal in self.goals:
-                if goal.name == "thirst":
-                    goal.value -= waterProb* action.values[0]
-        elif(action.index == 9): #rest
-            for goal in self.goals:
-                if goal.name == "rest":
-                    goal.value -= action.values[0]
+            self.goals[1].value -= waterProb * action.values[0]
+        elif action.index == 9: #rest
+            self.goals[2].value -= action.values[0]
 
     def calc_discomfort(self):
         val = 0
@@ -457,6 +449,7 @@ class Tribute(Particle):
         self.has_weapon = True
         weaponType = random.randint(1, 10)
         self.weapon = weapon(self.weaponInfo.weaponType(weaponType))
+        print str(self), ' has picked up a ', str(self.weapon)
 
 
     def checkCraftScavenge(self, game_map):

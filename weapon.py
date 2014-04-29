@@ -16,6 +16,8 @@ class weapon:
         self.setRanged()
         self.damageCap = self.weaponInfo.weaponStrength(self.type)
 
+    def __repr__(self):
+        return '<Weapon>(' + str(self.type) + ', ' + str(self.damage) + ')'
 
     def findDamage(self):
         return random.randint(1,self.weaponInfo.weaponStrength(self.type))
