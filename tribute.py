@@ -47,6 +47,7 @@ class Tribute(Particle):
         self.last_opponent = None
         self.sighted = None
         self.last_action = None
+        self.old_state = self.state
 
         self.weaponInfo = weaponInfo()
         self.wepCanCraft = None
@@ -275,6 +276,7 @@ class Tribute(Particle):
         loc = game_map[self.state[0]][self.state[1]]
         if action.index >= 0 and action.index <= 3:  # moving so don't know what gonna do here
             loc.setTribute(None)
+            self.old_state = self.state
             self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.map_dims[0],
                 (self.state[1] + action.delta_state[1]) % engine.GameEngine.map_dims[1])
             (game_map[self.state[0]][self.state[1]]).setTribute(self)
@@ -320,6 +322,29 @@ class Tribute(Particle):
             for goal in self.goals:
                 if goal.name == "rest":
                     goal.value -= action.values[0]
+        elif action.index == 11: # talk ally
+            f1 = self.attributes['friendliness']
+            x = self.state[0]
+            y = self.state[1]
+            w = engine.GameEngine.map_dims[0]
+            h = engine.GameEngine.map_dims[1]
+            targ = game_map[(x + 1) % w][y].tribute or \
+                   game_map[(x - 1) % w][y].tribute or \
+                   game_map[x][(y + 1) % h].tribute or \
+                   game_map[x][(y - 1) % h].tribute
+            if not targ:
+                print 'No target for ally!'
+            elif targ not in self.allies:
+                f2 = targ.attributes['friendliness']
+                a1 = self.attributes['district_prejudices'][targ.district]
+                a2 = targ.attributes['district_prejudices'][self.district]
+                v = (f1 + f2 + a1 + a2) / 224.0
+                if random.random() < v:
+                    print str(self), ' and ', str(targ), ' have gotten allied!'
+                    self.allies.append(targ)
+                    targ.allies.append(self)
+
+            pass
 
     def calc_disc(self, gameMap):
         ret = 0
@@ -349,7 +374,7 @@ class Tribute(Particle):
                 if(goal.name == "hide" and not self.has_ally and not self.has_weapon):
                     goal.value += 0.01
                 if goal.name == "ally" and not self.has_ally and not self.has_weapon:
-                    goal.value += 0.05
+                    goal.value += 0.05 / (len(self.allies) + 1)**2
             if goal.name == "hunger":
                 goal.value += ((1/self.attributes['endurance']) + (self.attributes['size']/5))
             if goal.name == "thirst":
@@ -374,6 +399,7 @@ class Tribute(Particle):
             if self.last_opponent and self.fighting_state == FIGHT_STATE['fleeing']:
                 distance_before = abs(self.state[0] - self.last_opponent.state[0]) + \
                                   abs(self.state[1] + self.last_opponent.state[1])
+            self.old_state = self.state
             self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.map_dims[0],
                           (self.state[1] + action.delta_state[1]) % engine.GameEngine.map_dims[1])
 
@@ -419,6 +445,16 @@ class Tribute(Particle):
             self.goals[1].value -= waterProb * action.values[0]
         elif action.index == 9: #rest
             self.goals[2].value -= action.values[0]
+        elif action.index == 11: # talk ally
+            x = self.state[0]
+            y = self.state[1]
+            w = engine.GameEngine.map_dims[0]
+            h = engine.GameEngine.map_dims[1]
+            if gameMap[(x + 1) % w][y].tribute is not None or \
+               gameMap[(x - 1) % w][y].tribute is not None or \
+               gameMap[x][(y + 1) % h].tribute is not None or \
+               gameMap[x][(y - 1) % h].tribute is not None:
+                self.goals[6].value -= action.values[0]
 
     def calc_discomfort(self):
         val = 0

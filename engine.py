@@ -111,7 +111,12 @@ class GameEngine(object):
                         me.curTrib = tribute
         if not me.PAUSED:
             for tribute in me.tributes:
-                #print tribute.state
+                me.gameMap[tribute.old_state[0]][tribute.old_state[1]].tribute = None
+
+            for tribute in me.tributes:
+                me.gameMap[tribute.state[0]][tribute.state[1]].tribute = tribute
+
+            for tribute in me.tributes:
                 tribute.act(me.gameMap, me.state)  # finds bestAction and does it.
                 tribute.end_turn()
                 death = tribute.checkDead()
