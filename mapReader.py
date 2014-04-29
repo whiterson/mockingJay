@@ -14,7 +14,7 @@ def deepForest(definition):
 
     definition.setTerrain(terrainType)
     definition.setFoodChance(0.3)
-    definition.setWaterChance(0.0)
+    definition.setWaterChance(0)
     definition.setShortStickChance(0.8)
     definition.setVisibility(0.2)
     definition.setSharpStoneChance(0.1)
@@ -38,7 +38,7 @@ def dirt(definition):
     terrainType = 1
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.05)
+    definition.setFoodChance(0.0)
     definition.setWaterChance(0.0)
     definition.setShortStickChance(0.0)
     definition.setVisibility(1)
@@ -74,8 +74,8 @@ def grass(definition):
     definition.setSpeedChange(1)
     definition.setWeaponChance(0.0)
     definition.setLongStickChance(0.0)
-    definition.setBroadStoneChance(0.05)
-    definition.setLongGrassChance(0.05)
+    definition.setBroadStoneChance(0.1)
+    definition.setLongGrassChance(0.1)
     definition.setReedsChance(0.0)
     definition.setPebblesChance(0.1)
     definition.setThornsChance(0.0)
@@ -174,7 +174,7 @@ def mud(definition):
     definition.setSpeedChange(1)
     definition.setWeaponChance(0.0)
     definition.setLongStickChance(0.0)
-    definition.setBroadStoneChance(0.05)
+    definition.setBroadStoneChance(0.1)
     definition.setLongGrassChance(0.0)
     definition.setReedsChance(0.0)
     definition.setPebblesChance(0.1)
@@ -239,7 +239,7 @@ def shallowWater(definition):
     terrainType = 9
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.05)
+    definition.setFoodChance(0.0)
     definition.setWaterChance(1)
     definition.setShortStickChance(0.0)
     definition.setVisibility(0.0)
@@ -289,7 +289,7 @@ def swimmingWater(definition):
     terrainType = 11
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.3)
+    definition.setFoodChance(0)
     definition.setWaterChance(1)
     definition.setShortStickChance(0.0)
     definition.setVisibility(0.5)
@@ -339,7 +339,7 @@ def wadingWater(definition):
     terrainType = 13
 
     definition.setTerrain(terrainType)
-    definition.setFoodChance(0.1)
+    definition.setFoodChance(0.0)
     definition.setWaterChance(1)
     definition.setShortStickChance(0.0)
     definition.setVisibility(1)
