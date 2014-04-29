@@ -39,7 +39,7 @@ class GameEngine(object):
         getwater = Action([5], ["thirst"], 1, 9, (0, 0), 'get_water')
         rest = Action([5], ["rest"], 1, 10, (0, 0), 'rest')
         talkAlly = Action([5], ["ally"], 1, 11, (0, 0), 'talk_ally')
-        explore = Action([4, 4], ['multiple'], 1, 12, (0, 0), 'explore')
+        explore = Action([1, 1], ['multiple'], 1, 12, (0, 0), 'explore')
 
         #create actions (will be overwritten in a minute)
         hunger = Goal("hunger", 2)
