@@ -73,11 +73,13 @@ class GameEngine(object):
             initTribute = me.create_goals(me.tributes[i])
             me.tributes[i].goals = initTribute
 
+
+        mapToBeUsed = 'maps/allTerr.jpg'
         me.dims = (110, 70)
         me.map_dims = (50, 50)
-        me.gameMap = readMap('maps/basicMap.jpg')
+        me.gameMap = readMap(mapToBeUsed)
         me.view = graphics.GameView(*me.dims)
-        me.map = map.Map('maps/basicMap.jpg')
+        me.map = map.Map(mapToBeUsed)
         me.state = me.map.seed_game_state(me.tributes)  # game.GameState()
         me.is_looping = True
         me.curTrib = me.tributes[0]

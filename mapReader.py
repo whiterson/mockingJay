@@ -14,7 +14,7 @@ def deepForest(definition):
 
     definition.setTerrain(terrainType)
     definition.setFoodChance(0.3)
-    definition.setWaterChance(0.1)
+    definition.setWaterChance(0.0)
     definition.setShortStickChance(0.8)
     definition.setVisibility(0.2)
     definition.setSharpStoneChance(0.1)
@@ -115,7 +115,7 @@ def lightForest(definition):
 
     definition.setTerrain(terrainType)
     definition.setFoodChance(0.3)
-    definition.setWaterChance(0.05)
+    definition.setWaterChance(0.0)
     definition.setShortStickChance(0.9)
     definition.setVisibility(0.9)
     definition.setSharpStoneChance(0.3)
@@ -140,7 +140,7 @@ def lowVegetation(definition):
 
     definition.setTerrain(terrainType)
     definition.setFoodChance(0.6)
-    definition.setWaterChance(0.05)
+    definition.setWaterChance(0.0)
     definition.setShortStickChance(0.05)
     definition.setVisibility(0.05)
     definition.setSharpStoneChance(0.2)
@@ -165,7 +165,7 @@ def mud(definition):
 
     definition.setTerrain(terrainType)
     definition.setFoodChance(0.0)
-    definition.setWaterChance(0.1)
+    definition.setWaterChance(0.05)
     definition.setShortStickChance(0.0)
     definition.setVisibility(1)
     definition.setSharpStoneChance(0.05)
@@ -407,6 +407,28 @@ def startSpot(definition):
 
     return definition
 
+def colorError(definition):
+    terrainType = 16
+
+    definition.setTerrain(terrainType)
+    definition.setFoodChance(0.0)
+    definition.setWaterChance(0.0)
+    definition.setShortStickChance(0.0)
+    definition.setVisibility(0)
+    definition.setSharpStoneChance(0.0)
+    definition.setFeatherChance(0.0)
+    definition.setVineChance(0.0)
+    definition.setSpeedChange(0)
+    definition.setWeaponChance(0.0)
+    definition.setLongStickChance(0.0)
+    definition.setBroadStoneChance(0.0)
+    definition.setLongGrassChance(0.0)
+    definition.setReedsChance(0.0)
+    definition.setPebblesChance(0.0)
+    definition.setThornsChance(0.0)
+
+    return definition
+
 """My Python Switch Case Based on Pixel Value"""
 switch = {(1, 35, 18) : deepForest,
           (97, 63, 2) : dirt,
@@ -423,7 +445,9 @@ switch = {(1, 35, 18) : deepForest,
           (169, 153, 18): tallGrass,
           (88, 156, 179): wadingWater,
           (0,0,0): cornucopia,
-          (84,86,90): startSpot
+          (84,86,90): startSpot,
+          (300,300,300): colorError
+
 }
 
 def readMap(mapInput):
@@ -442,6 +466,8 @@ def readMap(mapInput):
                 locDef  = switch[pixel](definition)
                 gameMap[i][j] = locDef
             else:
-                testFile.write("Color Error\n")
+                definition = locationDef()
+                locDef = switch[(300,300,300)](definition)
+                gameMap[i][j] = locDef
     testFile.close()
     return gameMap
