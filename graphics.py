@@ -63,26 +63,6 @@ class GameView(object):
             self.screen.blit(fontobject.render(t2.first_name, 1, color), (s_x, s_y + 50))
             s_x += 90
 
-        # sY = 520
-        # sX = 70
-        # for i in range(2, 4):
-        #     if i % 2 == 0:
-        #         self.screen.blit(fontobject.render('District ' + str(i/2), 1, (255, 255, 255)), (sX, sY))
-        #         if (i - 2) % 4 == 0 and i != 2:
-        #             sY += 40
-        #             sX -= 800
-        #
-        #     #Check if alive here
-        #     if (i - 2) < len(tributes):
-        #         self.screen.blit(fontobject.render(tributes[i-2].first_name + ' - Alive', 1,
-        #                                           (255, 255, 255)), (sX - 15, sY + 25))
-        #     #Print weapons here
-        #     #Print alive here
-        #     sY += 20
-        #     if i % 2 == 0 and i != 2:
-        #         sX += 200
-        #         sY -= 40
-
     def textTribute(self, tribute):
         fontobject=pygame.font.SysFont('Arial', 18)
         self.screen.blit(fontobject.render((tribute.first_name+ ' ' + tribute.last_name), 1, (255, 255, 255)), (510, 20))
@@ -103,5 +83,5 @@ class GameView(object):
         self.screen.blit(fontobject.render('****************GOALS*****************', 1, (255, 255, 255)), (505, 350))
 
         for i, goal in enumerate(tribute.goals):
-            self.screen.blit(fontobject.render(goal.name + ': ' + str(goal.value), 1, (255, 255, 255)), (510 + 140 * (i % 2), 385 + (35 * (i / 2))))
+            self.screen.blit(fontobject.render(goal.name + ': ' + ('%.2f' % goal.value), 1, (255, 255, 255)), (510 + 140 * (i % 2), 385 + (35 * (i / 2))))
 
