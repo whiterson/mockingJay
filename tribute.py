@@ -126,6 +126,7 @@ class Tribute(Particle):
             print str(self) + ' is engaging in combat with ' + str(t) + '!'
         elif self.fighting_state == FIGHT_STATE['fleeing']:
             self.opponent = t
+            t.engage_in_combat(self)
             print str(self) + ' is being chased by ' + str(t) + '!'
 
     def disengage_in_combat(self, t):
@@ -207,7 +208,7 @@ class Tribute(Particle):
 
             self.sighted = self.enemy_in_range(game_state)
 
-            if self.sighted:
+            if self.sighted and not self.sighted.killed:
                 actions = self.actions + [self.fight_action]
 
             for a in actions:
@@ -329,7 +330,7 @@ class Tribute(Particle):
     def end_turn(self):
         for goal in self.goals:
             if goal.name == "kill" and self.fighting_state != FIGHT_STATE['fleeing']:
-                goal.value += ((self.attributes["bloodlust"]-1)/5.0)
+                goal.value += ((self.attributes["bloodlust"]-1)/5.0) + 1
             if (self.district == 1 or self.district == 2 or self.district == 4):
                 if goal.name == "kill":
                     goal.value +=0.1
@@ -359,6 +360,7 @@ class Tribute(Particle):
                 goal.value = max(goal.value - 0.1, 0)
                 if goal.value < 4 and self.fighting_state == FIGHT_STATE['fleeing']:
                     self.fighting_state = FIGHT_STATE['not_fighting']
+            goal.value = max(goal.value, 0)
 
 
     #Action will update the state of the world by calculating
@@ -392,7 +394,8 @@ class Tribute(Particle):
         elif action.index == 5: #kill
             for goal in self.goals:
                 if goal.name == "kill":
-                    goal.value = max(self.goals[3].value - action.values[0], 0)
+                    if abs(self.sighted.state[0] - self.state[0]) + abs(self.sighted.state[1] - self.state[1]) == 1:
+                        goal.value = max(self.goals[3].value - action.values[0], 0)
                 if goal.name == "fear":
                     if self.surmise_enemy_hit(self.sighted) > self.surmise_enemy_hit(self):
                         goal.value += 10
