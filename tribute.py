@@ -373,7 +373,7 @@ class Tribute(Particle):
                     goal.value +=0.05
                 if(goal.name == "hide" and not self.has_ally and not self.has_weapon):
                     goal.value += 0.01
-                if goal.name == "ally" and not self.has_ally and not self.has_weapon:
+                if goal.name == "ally":
                     goal.value += 0.05 / (len(self.allies) + 1)**2
             if goal.name == "hunger":
                 goal.value += ((1/self.attributes['endurance']) + (self.attributes['size']/5))
@@ -450,10 +450,10 @@ class Tribute(Particle):
             y = self.state[1]
             w = engine.GameEngine.map_dims[0]
             h = engine.GameEngine.map_dims[1]
-            if gameMap[(x + 1) % w][y].tribute is not None or \
-               gameMap[(x - 1) % w][y].tribute is not None or \
-               gameMap[x][(y + 1) % h].tribute is not None or \
-               gameMap[x][(y - 1) % h].tribute is not None:
+            if (gameMap[(x + 1) % w][y].tribute is not None and gameMap[(x + 1) % w][y].tribute not in self.allies) or \
+               (gameMap[(x - 1) % w][y].tribute is not None and gameMap[(x - 1) % w][y].tribute not in self.allies) or \
+               (gameMap[x][(y + 1) % h].tribute is not None and gameMap[x][(y + 1) % h].tribute not in self.allies) or \
+               (gameMap[x][(y - 1) % h].tribute is not None and gameMap[x][(y - 1) % h].tribute not in self.allies):
                 self.goals[6].value -= action.values[0]
 
     def calc_discomfort(self):
