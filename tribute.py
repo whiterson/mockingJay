@@ -225,7 +225,7 @@ class Tribute(Particle):
             if self.sighted and not self.sighted.killed:
                 actions = self.actions + [self.fight_action]
 
-            if self.goals[0].value > 90 or self.goals[1].value > 20:
+            if self.goals[0].value > 90 or self.goals[1].value > 50 or self.goals[3].value > 200:
                 actions = self.actions + [self.explore_action]
 
             for a in actions:
@@ -520,6 +520,7 @@ class Tribute(Particle):
         elif action.index == 12:  # explore
             self.goals[0].value = max(self.goals[0].value - action.values[0], 0)
             self.goals[1].value = max(self.goals[1].value - action.values[1], 0)
+            self.goals[3].value = max(self.goals[1].value - action.values[2], 0)
 
     def calc_discomfort(self):
         val = 0
