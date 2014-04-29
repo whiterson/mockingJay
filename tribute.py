@@ -521,27 +521,24 @@ class Tribute(Particle):
                 already_have = 0
                 for item in mockPouch:
                     if item == type:
-                        already_have = 1
-                if(already_have == 0):
-                    mockPouch.append(type)
-                    for weapon in self.weaponInfo.weaponList:
-                        possPoints = 0
-                        canCraft = self.weaponInfo.canCraft(weapon,mockPouch)
-                        if canCraft:
-                            possPoints += 3 + (self.weaponInfo.weaponStrength(weapon)/2)
-                            if possPoints > self.bestScavPoints:
-                                self.bestScavPoints = possPoints
-                                self.bestScavChoice = type
-                                bestPossPoints = possPoints
-                        else:
-                            numItemsNeedToCraft = len(self.weaponInfo.itemsNeededToCraft(weapon,mockPouch))
-                            possPoints += 5 - numItemsNeedToCraft + (self.weaponInfo.weaponStrength(weapon)/10)
-                            if possPoints > self.bestScavPoints:
-                                self.bestScavPoints = possPoints
-                                self.bestScavChoice = type
-                                bestPossPoints = possPoints
-                else:
-                    bestPossPoints = 0
+                        return 0
+                mockPouch.append(type)
+                for weapon in self.weaponInfo.weaponList:
+                    possPoints = 0
+                    canCraft = self.weaponInfo.canCraft(weapon,mockPouch)
+                    if canCraft:
+                        possPoints += 3 + (self.weaponInfo.weaponStrength(weapon)/2)
+                        if possPoints > self.bestScavPoints:
+                            self.bestScavPoints = possPoints
+                            self.bestScavChoice = type
+                            bestPossPoints = possPoints
+                    else:
+                        numItemsNeedToCraft = len(self.weaponInfo.itemsNeededToCraft(weapon,mockPouch))
+                        possPoints += 5 - numItemsNeedToCraft + (self.weaponInfo.weaponStrength(weapon)/10)
+                        if possPoints > self.bestScavPoints:
+                            self.bestScavPoints = possPoints
+                            self.bestScavChoice = type
+                            bestPossPoints = possPoints
 
         return bestPossPoints
 

@@ -426,10 +426,10 @@ switch = {(1, 35, 18) : deepForest,
           (84,86,90): startSpot
 }
 
-def readMap(map):
+def readMap(mapInput):
     testFile = open('maptest.txt', 'a')
     testFile.write('\n\n=============================\nNew Map Test\n=============================\n\n')
-    map = Image.open('terrains/wadingWater.jpg')
+    map = Image.open(mapInput)
 
     gameMap = [[0 for t in xrange(map.size[0])] for r in xrange(map.size[1])]
 

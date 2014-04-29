@@ -75,9 +75,9 @@ class GameEngine(object):
 
         me.dims = (110, 70)
         me.map_dims = (50, 50)
-        me.gameMap = readMap('maps/field.png')
+        me.gameMap = readMap('maps/basicMap.jpg')
         me.view = graphics.GameView(*me.dims)
-        me.map = map.Map('maps/field.png')
+        me.map = map.Map('maps/basicMap.jpg')
         me.state = me.map.seed_game_state(me.tributes)  # game.GameState()
         me.is_looping = True
         me.curTrib = me.tributes[0]
