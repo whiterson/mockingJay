@@ -56,6 +56,8 @@ class Tribute(Particle):
         self.explore_point_index = 0
         self.explore_point = NAVIGATION_POINTS[self.explore_point_index]
 
+        self.hidden = False
+
         self.weaponInfo = weaponInfo()
         self.wepCanCraft = None
         self.bestScavChoice = ''
@@ -122,6 +124,7 @@ class Tribute(Particle):
         n.visited_set = self.visited_set.copy()
         n.explore_point = self.explore_point
         n.explore_point_index = self.explore_point_index
+        n.hidden = self.hidden
         return n
 
     def __repr__(self):
@@ -263,6 +266,9 @@ class Tribute(Particle):
             self.disengage_in_combat(self.opponent)
             return
 
+        if self.opponent.hidden:
+            print str(self), ' cannot find ', str(self.opponent)
+
         self.last_action = action_name
         damage = 0
         # with weapon 1d6 damage + 1d(str/2) + 1
@@ -303,7 +309,7 @@ class Tribute(Particle):
             self.fighting_state = FIGHT_STATE['fleeing']
 
     def do_action(self, action, game_map):
-
+        self.hidden = False
         self.last_action = action
         rand = (random.randint(1, 10)) / 10
         loc = game_map[self.state[0]][self.state[1]]
@@ -346,16 +352,17 @@ class Tribute(Particle):
                         else:
                             goal.value -= (10/self.attributes['crafting_skill'])
         elif action.index == 8:  # hide
-            pass
+            ub = self.attributes['camouflage_skill']
+            if random.randrange(0, 11) < ub:
+                self.hidden = True
+
         elif action.index == 9:  # get water
             water_prob = loc.getWaterChance()
             for goal in self.goals:
                 if goal.name == "thirst":
                     if rand <= water_prob:
                         goal.value -= action.values[0]
-                        print 'drank'
-                    else:
-                        print 'didnt drink, prob: ', str(water_prob), ', draw: ', str(rand)
+
         elif action.index == 10:  # rest
             for goal in self.goals:
                 if goal.name == "rest":
@@ -494,7 +501,7 @@ class Tribute(Particle):
             craftProb = self.checkCraftWeapon()
             self.goals[5].value -= craftProb * action.values[0]
         elif action.index == 8:  # hide
-            pass
+            self.goals[7].modify_value(-(action.values[0] * (self.attributes['camouflage_skill'] / 10.0)))
         elif action.index == 9:  # get_water
             waterProb = loc.getWaterChance()
             self.goals[1].value -= waterProb * action.values[0]
