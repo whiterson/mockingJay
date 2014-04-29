@@ -21,6 +21,7 @@ class GameEngine(object):
     PAUSED = False
     curTrib = None
     tributes_by_district = []
+    map_dims = []
     @staticmethod
     def start():
         me = GameEngine
@@ -38,6 +39,7 @@ class GameEngine(object):
         getwater = Action([5], ["thirst"], 1, 9, (0, 0), 'get_water')
         rest = Action([5], ["rest"], 1, 10, (0, 0), 'rest')
         talkAlly = Action([5], ["ally"], 1, 11, (0, 0), 'talk_ally')
+        explore = Action([4, 4], ['multiple'], 1, 12, (0, 0), 'explore')
 
         #create actions (will be overwritten in a minute)
         hunger = Goal("hunger", 2)
@@ -49,13 +51,13 @@ class GameEngine(object):
         ally = Goal("ally", 0)
 
         goals = [hunger, thirst, goalRest, kill, goalHide, getweapon, ally]
-        actions = [move_up, move_down, move_right, move_left, hunt, fight, scavenge, craft, hide, getwater, rest, talkAlly]
+        actions = [move_up, move_down, move_right, move_left, hunt, fight, scavenge, craft, hide, getwater, rest, talkAlly, explore]
 
         #create the goals here
         #not really needed right now
 
         init_locations = [(x, y) for x in range(10) for y in range(10)]
-        districts = ['d' + str(x) for x in range(1, 3)]
+        districts = ['d' + str(x) for x in range(1, 2)]
 
         for d in districts:
             location = random.choice(init_locations)
@@ -63,15 +65,16 @@ class GameEngine(object):
             t1 = Tribute(goals, actions, *location, district=d, gender='male')
             me.tributes.append(t1)
 
-            location = random.choice(init_locations)
-            init_locations.remove(location)
-            t2 = Tribute(goals, actions, *location, district=d, gender='female')
-            me.tributes.append(t2)
-            me.tributes_by_district.append((d, t1, t2))
+            #location = random.choice(init_locations)
+            #init_locations.remove(location)
+            #t2 = Tribute(goals, actions, *location, district=d, gender='female')
+            #me.tributes.append(t2)
+            #me.tributes_by_district.append((d, t1, t2))
 
         for i in range(len(me.tributes)):
             initTribute = me.create_goals(me.tributes[i])
             me.tributes[i].goals = initTribute
+            #me.create_actions(me.tributes[i])
 
 
         mapToBeUsed = 'maps/allTerr.jpg'
@@ -198,7 +201,10 @@ class GameEngine(object):
         allyStats = (tribute.attributes['friendliness'] + (1/tribute.attributes['size']) + (1/tribute.attributes['strength']) + (0.5/tribute.attributes['fighting_skill']))
         talkAlly = Action([allyStats], ["ally"], 1, 11, (0,0),'talk_ally')
 
-        newActions = [move_up, move_down, move_right, move_left, hunt, fight, scavenge, craft, hide, getwater, rest, talkAlly]
+        explore = Action([3], ['multiple'], 1, 12, (0, 0), 'explore')
+
+        newActions = [move_up, move_down, move_right, move_left, hunt,
+                      fight, scavenge, craft, hide, getwater, rest, talkAlly, explore]
 
         tribute.actions = newActions
 

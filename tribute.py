@@ -6,6 +6,7 @@ import sys
 from probability import uniform_variable as U
 from weaponInfo import weaponInfo
 from weapon import weapon
+import mapReader
 
 class Particle(object):
     def __init__(self, state=(0, 0), width=1, height=1):
@@ -34,7 +35,8 @@ class Tribute(Particle):
 
         # remove the fight action. we don't want them fighting unless someone is in range
         self.fight_action = actions[5]
-        self.actions = self.actions[:5] + self.actions[6:]
+        self.explore_action = actions[12]
+        self.actions = self.actions[:5] + self.actions[6:12]
 
         self.district = district
         self.has_weapon = False
@@ -48,6 +50,8 @@ class Tribute(Particle):
         self.sighted = None
         self.last_action = None
         self.old_state = self.state
+        self.visited_set = set()
+        self.explore_point = (25 % 50, 25 % 50)
 
         self.weaponInfo = weaponInfo()
         self.wepCanCraft = None
@@ -98,7 +102,7 @@ class Tribute(Particle):
 
     def clone(self):
         n_goals = [g.clone() for g in self.goals]
-        n_actions = self.actions[:]
+        n_actions =  self.actions[:5] + [self.fight_action] + self.actions[5:12] + [self.explore_action]
         n_district = self.district[:]
         n_gender = self.gender[:]
         n = Tribute(n_goals, n_actions, x=self.state[0], y=self.state[1], district=n_district,
@@ -112,6 +116,7 @@ class Tribute(Particle):
         n.last_opponent = self.last_opponent
         n.bestScavChoice = self.bestScavChoice
         n.bestScavPoints = self.bestScavPoints
+        n.visited_set = self.visited_set.copy()
         return n
 
     def __repr__(self):
@@ -212,30 +217,32 @@ class Tribute(Particle):
             if self.sighted and not self.sighted.killed:
                 actions = self.actions + [self.fight_action]
 
+            if self.goals[0].value > 90 or self.goals[1].value > 90:
+                actions = self.actions + [self.explore_action]
+
             for a in actions:
                 t = copy.deepcopy(self)
                 t.apply_action(a, gameMap)
                 v = t.calc_min_discomfort(0, 2, gameMap, actions)
                 if v < best_action[1]:
                     best_action = (a, v)
-
-            for goal in self.goals:
-                rand = random.randint(0,2)
-                #very hungry and slightly hungry
-                if goal.name == 'hunger' and ((goal.value > 22 and goal.value < 26) or (goal.value >13 and goal.value <16)):
-                    best_action = (self.actions[rand], 100)
-                    break
-
-
-                #very thirsty and slightly thirsty
-                if goal.name == 'thirst' and ((goal.value > 22 and goal.value < 26) or (goal.value>13 and goal.value < 16)):
-                    best_action = (self.actions[rand], 100)
-                    break
-
-                #very tired and slightly tired
-                if goal.name == 'rest' and goal.value >= 33 and goal.value <37:
-                    best_action = (self.actions[rand], 100)
-                    break
+            # for goal in self.goals:
+            #     rand = random.randint(0,2)
+            #     #very hungry and slightly hungry
+            #     if goal.name == 'hunger' and ((goal.value > 22 and goal.value < 26) or (goal.value >13 and goal.value <16)):
+            #         best_action = (self.actions[rand], 100)
+            #         break
+            #
+            #
+            #     #very thirsty and slightly thirsty
+            #     if goal.name == 'thirst' and ((goal.value > 22 and goal.value < 26) or (goal.value>13 and goal.value < 16)):
+            #         best_action = (self.actions[rand], 100)
+            #         break
+            #
+            #     #very tired and slightly tired
+            #     if goal.name == 'rest' and goal.value >= 33 and goal.value <37:
+            #         best_action = (self.actions[rand], 100)
+            #         break
 
             if self.fighting_state == FIGHT_STATE['fleeing']:
                 pass
@@ -248,6 +255,10 @@ class Tribute(Particle):
 
 
     def do_fight_action(self, action_name):
+        if self.opponent.killed:
+            self.disengage_in_combat(self.opponent)
+            return
+
         self.last_action = action_name
         damage = 0
         # with weapon 1d6 damage + 1d(str/2) + 1
@@ -362,7 +373,18 @@ class Tribute(Particle):
                     self.allies.append(targ)
                     targ.allies.append(self)
 
-            pass
+        elif action.index == 12: # explore
+            directions = mapReader.get_neighbors(game_map, self.state)
+            evals = []
+
+            for i, direction in enumerate(directions):
+                evals.append((mapReader.l1_dist(direction, self.explore_point), direction, i))
+
+            direction = min(evals, key=lambda x: x[0] + random.random() / 1000)
+            print 'exploring!!'
+            self.state = direction[1]
+
+
 
     def calc_disc(self, gameMap):
         ret = 0
@@ -460,7 +482,7 @@ class Tribute(Particle):
             self.goals[5].value -= craftProb * action.values[0]
         elif action.index == 8: #getwater
             waterProb = loc.getWaterChance()
-            self.goals[1].value -= waterProb * action.values[0]
+            self.goals[1].value -= waterProb**10 * action.values[0]
         elif action.index == 9: #rest
             self.goals[2].value -= action.values[0]
         elif action.index == 11: # talk ally
@@ -473,6 +495,9 @@ class Tribute(Particle):
                (gameMap[x][(y + 1) % h].tribute is not None and gameMap[x][(y + 1) % h].tribute not in self.allies) or \
                (gameMap[x][(y - 1) % h].tribute is not None and gameMap[x][(y - 1) % h].tribute not in self.allies):
                 self.goals[6].value -= action.values[0]
+        elif action.index == 12:
+            self.goals[0].value = max(self.goals[0].value - action.values[0], 0)
+            self.goals[1].value = max(self.goals[1].value - action.values[1], 0)
 
     def calc_discomfort(self):
         val = 0
@@ -484,14 +509,17 @@ class Tribute(Particle):
     def checkDead(self):
         for goal in self.goals:
             if goal.name == "hunger":
-                if goal.value >= 35:
+                if goal.value >= 200:
+                    self.killed = True
                     return " starvation "
             #You get thirsty a lot faster than you get hungry
             if goal.name == "thirst":
-                if goal.value >= 35:
+                if goal.value >= 200:
+                    self.killed = True
                     return " terminal dehydration "
             if goal.name == "rest":
-                if goal.value >= 40:
+                if goal.value >= 250:
+                    self.killed = True
                     return " exhaustion "
 
         if self.killed:
