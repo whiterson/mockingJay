@@ -14,6 +14,8 @@ class Particle(object):
         self.width, self.height = width, height
 
 FIGHT_STATE = {'not_fighting': 0, 'fleeing': 1, 'fighting': 2}
+NAVIGATION_POINTS = [(25, 25), (5, 5), (45, 5), (45, 45), (5, 45)]
+
 
 class Tribute(Particle):
     #Goals = list of goals for tribute
@@ -51,7 +53,8 @@ class Tribute(Particle):
         self.last_action = None
         self.old_state = self.state
         self.visited_set = set()
-        self.explore_point = (25 % 50, 25 % 50)
+        self.explore_point_index = 0
+        self.explore_point = NAVIGATION_POINTS[self.explore_point_index]
 
         self.weaponInfo = weaponInfo()
         self.wepCanCraft = None
@@ -117,6 +120,8 @@ class Tribute(Particle):
         n.bestScavChoice = self.bestScavChoice
         n.bestScavPoints = self.bestScavPoints
         n.visited_set = self.visited_set.copy()
+        n.explore_point = self.explore_point
+        n.explore_point_index = self.explore_point_index
         return n
 
     def __repr__(self):
@@ -230,21 +235,21 @@ class Tribute(Particle):
             hung = 0
             rest = 0
 
-            for goal in self.goals:
-                rand = random.randint(0,2)
-                #very hungry and slightly hungry
-                if goal.name == 'hunger' and ((goal.value > 22 and goal.value < 26) or (goal.value >13 and goal.value <16)):
-                    best_action = (self.actions[rand], 100)
-                    hung = goal.value
-
-
-                #very thirsty and slightly thirsty
-                if goal.name == 'thirst' and ((goal.value > 22 and goal.value < 26) or (goal.value>13 and goal.value < 16)):
-                    best_action = (self.actions[rand], 100)
-                    thirst = goal.value
-
-            if self.goals[3].value >= 150 and thirst < 33 and hung < 33 and rest < 40:
-                best_action = (self.actions[rand+1], 100)
+            # for goal in self.goals:
+            #     rand = random.randint(0,2)
+            #     #very hungry and slightly hungry
+            #     if goal.name == 'hunger' and ((goal.value > 22 and goal.value < 26) or (goal.value >13 and goal.value <16)):
+            #         best_action = (self.actions[rand], 100)
+            #         hung = goal.value
+            #
+            #
+            #     #very thirsty and slightly thirsty
+            #     if goal.name == 'thirst' and ((goal.value > 22 and goal.value < 26) or (goal.value>13 and goal.value < 16)):
+            #         best_action = (self.actions[rand], 100)
+            #         thirst = goal.value
+            #
+            # if self.goals[3].value >= 150 and thirst < 33 and hung < 33 and rest < 40:
+            #     best_action = (self.actions[rand+1], 100)
 
             self.do_action(best_action[0], gameMap)
 
@@ -384,7 +389,10 @@ class Tribute(Particle):
             for i, direction in enumerate(directions):
                 evals.append((mapReader.l1_dist(direction, self.explore_point), direction, i))
 
-            direction = min(evals, key=lambda x: x[0] + random.random() / 1000)
+            direction = min(evals, key=lambda x: x[0] + random.random() / 1000)  # rand is for breaking ties
+            if mapReader.l1_dist(self.explore_point, direction[1]) < 3:
+                self.explore_point_index = (self.explore_point + 1) % len(NAVIGATION_POINTS)
+                self.explore_point = NAVIGATION_POINTS[self.explore_point_index]
             print 'exploring!!'
             self.state = direction[1]
 
@@ -490,7 +498,7 @@ class Tribute(Particle):
             waterProb = loc.getWaterChance()
             self.goals[1].value -= waterProb * action.values[0]
         elif action.index == 10:  # rest
-            self.goals[2].value -= action.values[0]*3
+            self.goals[2].value -= action.values[0]
         elif action.index == 11: # talk ally
             x = self.state[0]
             y = self.state[1]

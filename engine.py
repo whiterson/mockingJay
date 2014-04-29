@@ -57,7 +57,7 @@ class GameEngine(object):
         #not really needed right now
 
         init_locations = [(x, y) for x in range(15,30) for y in range(15,35)]
-        districts = ['d' + str(x) for x in range(1, 2)]
+        districts = ['d' + str(x) for x in range(1, 4)]
 
         for d in districts:
             location = random.choice(init_locations)
@@ -65,11 +65,11 @@ class GameEngine(object):
             t1 = Tribute(goals, actions, *location, district=d, gender='male')
             me.tributes.append(t1)
 
-            #location = random.choice(init_locations)
-            #init_locations.remove(location)
-            #t2 = Tribute(goals, actions, *location, district=d, gender='female')
-            #me.tributes.append(t2)
-            #me.tributes_by_district.append((d, t1, t2))
+            location = random.choice(init_locations)
+            init_locations.remove(location)
+            t2 = Tribute(goals, actions, *location, district=d, gender='female')
+            me.tributes.append(t2)
+            me.tributes_by_district.append((d, t1, t2))
 
         for i in range(len(me.tributes)):
             initTribute = me.create_goals(me.tributes[i])
@@ -131,7 +131,7 @@ class GameEngine(object):
             me.view.render(me.state, me.curTrib, me.tributes_by_district, me.tributes)
             me.state.update()
         else:
-            me.view.render(me.state, me.curTrib, me.tributes_by_district)
+            me.view.render(me.state, me.curTrib, me.tributes_by_district, me.tributes)
         return True
 
     @staticmethod
