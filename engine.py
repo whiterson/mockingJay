@@ -70,12 +70,10 @@ class GameEngine(object):
             t2 = Tribute(goals, actions, *location, district=d, gender='female')
             me.tributes.append(t2)
             me.tributes_by_district.append((d, t1, t2))
-
         for i in range(len(me.tributes)):
             initTribute = me.create_goals(me.tributes[i])
             me.tributes[i].goals = initTribute
             #me.create_actions(me.tributes[i])
-
 
         mapToBeUsed = 'maps/allTerr.jpg'
         me.dims = (110, 70)
@@ -128,10 +126,17 @@ class GameEngine(object):
                 if death is not None:
                     print tribute.first_name, " ", tribute.last_name, " death by ", death
                     me.tributes.remove(tribute)
-            me.view.render(me.state, me.curTrib, me.tributes_by_district, me.tributes)
+                    if me.curTrib == tribute and len(me.tributes) > 1:
+                        me.curTrib = me.tributes[random.randint(0,len(me.tributes))]
+            if len(me.tributes) == 1:
+                me.PAUSED = True;
+            me.view.render(me.state, me.curTrib, me.tributes_by_district, me.tributes, 0)
             me.state.update()
         else:
-            me.view.render(me.state, me.curTrib, me.tributes_by_district, me.tributes)
+            if len(me.tributes)==1:
+                 me.view.render(me.state, me.curTrib, me.tributes_by_district, me.tributes, 1)
+            else:
+                me.view.render(me.state, me.curTrib, me.tributes_by_district, me.tributes, 0)
         return True
 
     @staticmethod

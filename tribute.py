@@ -381,6 +381,7 @@ class Tribute(Particle):
                     print str(self), ' and ', str(targ), ' have gotten allied!'
                     self.allies.append(targ)
                     targ.allies.append(self)
+                    self.goals[6].value = 0
 
         elif action.index == 12:  # explore
             directions = mapReader.get_neighbors(game_map, self.state)
@@ -391,7 +392,7 @@ class Tribute(Particle):
 
             direction = min(evals, key=lambda x: x[0] + random.random() / 1000)  # rand is for breaking ties
             if mapReader.l1_dist(self.explore_point, direction[1]) < 3:
-                self.explore_point_index = (self.explore_point + 1) % len(NAVIGATION_POINTS)
+                self.explore_point_index = (self.explore_point_index + 1) % len(NAVIGATION_POINTS)
                 self.explore_point = NAVIGATION_POINTS[self.explore_point_index]
             print 'exploring!!'
             self.state = direction[1]

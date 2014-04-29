@@ -20,7 +20,7 @@ class GameView(object):
         self.layers['particle'][0].set_colorkey((255, 0, 255))
         self.layers['particle'][0].fill((255, 0, 255))
 
-    def draw(self, tribute, tributes, alive):
+    def draw(self, tribute, tributes, alive, won):
         self.layers['particle'][0].fill((255, 0, 255))
         if bool(self.state):
             for layer in self.layers:
@@ -31,18 +31,21 @@ class GameView(object):
         layers_ordered = sorted(self.layers.iteritems(), key=lambda g: g[1][1])
         for layer in layers_ordered:
             self.screen.blit(layer[1][0], (0, 0))
+        if won:
+            self.drawWinner(tribute)
+        else:
+            self.textStats(tributes, alive)
 
         self.textTribute(tribute)
-        self.textStats(tributes, alive)
         pygame.display.flip()
 
-    def render(self, gs, tribute, tributes, alive):
+    def render(self, gs, tribute, tributes, alive, won):
         """
         here, we set the game state to render
         @param gs: the game state to render
         """
         self.state = gs
-        self.draw(tribute, tributes, alive)
+        self.draw(tribute, tributes, alive, won)
 
     def textStats(self, tributes, alive):
         fontobject = pygame.font.SysFont('Arial', 18)
@@ -85,3 +88,7 @@ class GameView(object):
         for i, goal in enumerate(tribute.goals):
             self.screen.blit(fontobject.render(goal.name + ': ' + ('%.2f' % goal.value), 1, (255, 255, 255)), (510 + 140 * (i % 2), 385 + (35 * (i / 2))))
 
+    def drawWinner(self, tribute):
+        trib = tribute
+        fontobject = pygame.font.SysFont('Arial', 18)
+        self.screen.blit(fontobject.render('Winner: ' + trib.first_name + " " + trib.last_name, 1, (255, 255, 255)), (250, 540))
