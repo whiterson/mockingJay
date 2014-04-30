@@ -324,11 +324,11 @@ class Tribute(Particle):
     def do_action(self, action, game_map):
 
         ##IF you can Craft a weapon, do it
-        if(not self.has_weapon):
-            for weapon in self.weaponInfo.weaponList:
-                if self.weaponInfo.canCraft(weapon, self.craftPouch):
-                    action.index = 7
-                    self.wepCanCraft = weapon
+        ##if(not self.has_weapon):
+        ##    for weapon in self.weaponInfo.weaponList:
+        ##        if self.weaponInfo.canCraft(weapon, self.craftPouch):
+        ##            action.index = 7
+         ##           self.wepCanCraft = weapon
 
 
         self.hidden = False
@@ -365,9 +365,8 @@ class Tribute(Particle):
                         goal.value -= self.bestScavPoints * self.doCraftScavenge(game_map, self.bestScavChoice)
         elif action.index == 7:  # craft
             ##Crafting Probability is factored into doCraftWeapon
-            print "Trying to Craft"
+            self.checkCraftWeapon()
             if self.wepCanCraft != '':
-                print "CRAFTING. FRIGGING CRAFTING"
                 for goal in self.goals:
                     if goal.name == "getweapon":
                         ## Returns boolean if you did it or not
@@ -526,7 +525,7 @@ class Tribute(Particle):
 
         elif action.index == 7:  # craft
             craftProb = self.checkCraftWeapon()
-            self.goals[5].value -= craftProb * action.values[0]
+            self.goals[5].value -= (self.goals[5].value * craftProb)
 
         elif action.index == 8:  # hide
             self.goals[7].modify_value(-(action.values[0] * (self.attributes['camouflage_skill'] / 10.0)))
@@ -623,17 +622,13 @@ class Tribute(Particle):
         return bestPossPoints
 
     def doCraftScavenge(self, game_map, type):
-        print "SCAVENGING FOR: "+type
         loc = game_map[self.state[0]][self.state[1]]
-        print "In loctype: " + str(loc.terrain)
         crTyProb = self.retScavTypeProb(type, loc)
         chance = random.randint(1, 10)
         if chance <= (10*crTyProb):
             cValue = 1
-            print "--- Success!"
             self.craftPouch.append(type)
         else:
-            print "--- Failure."
             cValue = 0
         return cValue
 
@@ -675,7 +670,6 @@ class Tribute(Particle):
         for wepType in self.weaponInfo.weaponList:
             ans = self.weaponInfo.canCraft(wepType, self.craftPouch)
             if(ans):
-                print "Recognizes Can Craft"
                 canCraft = 1
                 strength = self.weaponInfo.weaponStrength(wepType)
                 if strength > maxWepStrength:
@@ -689,16 +683,12 @@ class Tribute(Particle):
                         craftableWeapon = wepType
                 else:
                     craftableWeapon = self.wepCanCraft
-                finalNums = probCraft*canCraft*100
-                print "Nums : "+str(finalNums)
-                print "Gonna Craft: " + craftableWeapon
 
         self.wepCanCraft = craftableWeapon
         return probCraft*canCraft*100
 
     #Craft the weapon based on your skill. If you fail to craft, you still lose the items. Wah-wah.
     def doCraftWeapon(self, game_map, wepToCraft):
-        print "HOLY SHIT CRAFTING A WEAPON"
         itemsUsed = self.weaponInfo.totalItemsToCraft(wepToCraft)
         for needed in itemsUsed:
             for supply in self.craftPouch:
@@ -708,9 +698,7 @@ class Tribute(Particle):
         if chance <= self.attributes['crafting_skill']:
             crafted = True
             self.weapon = weapon(wepToCraft)
-            print "----SUCCESS"
         else:
-            print "----FAILURE.... aww"
             crafted = False
 
         self.wepCanCraft = None
