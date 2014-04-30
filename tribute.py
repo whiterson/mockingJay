@@ -549,9 +549,9 @@ class Tribute(Particle):
 
         elif action.index == 6:  # scavenge
             wepChance = loc.getWeaponChance()
-            if wepChance > 0.9:
+            if wepChance > 0.9 and not self.has_weapon:
                 self.goals[5].value -= wepChance * action.values[0]
-            else:
+            elif(not self.has_weapon):
                 self.goals[5].value -= self.checkCraftScavenge(gameMap)
 
         elif action.index == 7:  # craft
