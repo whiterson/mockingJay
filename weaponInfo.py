@@ -7,7 +7,7 @@ class weaponInfo:
         self.mace = ['sharpStone', 'thorn', 'shortStick']
         self.trident = ['longStick', 'shortStick', 'sharpStone']
         self.spear =  ['longStick', 'sharpStone']
-        self.axe = ['broadStone', 'longStick', 'longGrass']
+        self.axe = ['broadStone', 'longStick', 'reeds']
         self.sword = []
         self.dagger = ['sharpStone', 'longGrass']
         self.craftTypes = ['shortStick', 'longStick', 'sharpStone', 'broadStone', 'pebbles', 'feather', 'vine', 'reeds', 'longGrass', 'thorns']
