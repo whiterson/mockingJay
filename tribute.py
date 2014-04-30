@@ -50,11 +50,14 @@ class Tribute(Particle):
         self.opponent = None
         self.last_opponent = None
         self.sighted = None
+        self.last_sighted_location = None
         self.last_action = None
         self.old_state = self.state
         self.visited_set = set()
         self.explore_point_index = 0
         self.explore_point = NAVIGATION_POINTS[self.explore_point_index]
+
+        self.hidden = False
 
         self.weaponInfo = weaponInfo()
         self.wepCanCraft = ''
@@ -124,6 +127,8 @@ class Tribute(Particle):
         n.explore_point_index = self.explore_point_index
         n.craftPouch = self.craftPouch
         n.wepCanCraft = self.wepCanCraft
+        n.hidden = self.hidden
+        n.last_sighted_location = self.last_sighted_location
         return n
 
     def __repr__(self):
@@ -139,8 +144,10 @@ class Tribute(Particle):
             ##print str(self) + ' is engaging in combat with ' + str(t) + '!'
         elif self.fighting_state == FIGHT_STATE['fleeing']:
             self.opponent = t
-            t.engage_in_combat(self)
-            ##print str(self) + ' is being chased by ' + str(t) + '!'
+
+            if self.opponent.fighting_state != FIGHT_STATE['fleeing']:
+                t.engage_in_combat(self)
+            print str(self) + ' is being chased by ' + str(t) + '!'
 
     def disengage_in_combat(self, t):
         if self.fighting_state != FIGHT_STATE['not_fighting']:
@@ -220,12 +227,19 @@ class Tribute(Particle):
             actions = self.actions
 
             self.sighted = self.enemy_in_range(game_state)
+            if self.sighted:
+                self.last_sighted_location = self.sighted.state
 
             if self.sighted and not self.sighted.killed:
                 actions = self.actions + [self.fight_action]
 
-            if self.goals[0].value > 90 or self.goals[1].value > 20:
+            if self.goals[0].value > 90 or self.goals[1].value > 50:
                 actions = self.actions + [self.explore_action]
+            elif self.goals[3].value > 200:
+                actions = self.actions + [self.explore_action]
+                if self.last_sighted_location:
+                    self.explore_point = self.last_sighted_location
+
 
             for a in actions:
                 t = copy.deepcopy(self)
@@ -264,6 +278,9 @@ class Tribute(Particle):
         if self.opponent.killed:
             self.disengage_in_combat(self.opponent)
             return
+
+        if self.opponent.hidden:
+            print str(self), ' cannot find ', str(self.opponent)
 
         self.last_action = action_name
         damage = 0
@@ -306,15 +323,14 @@ class Tribute(Particle):
 
     def do_action(self, action, game_map):
 
-        print
-        print self.first_name + "'s Pouch"
-        print self.craftPouch
-        print "Weapon: " + self.weapon.type
-        print self.has_weapon
+        ##IF you can Craft a weapon, do it
         for weapon in self.weaponInfo.weaponList:
             if self.weaponInfo.canCraft(weapon, self.craftPouch):
                 action.index = 7
                 self.wepCanCraft = weapon
+
+
+        self.hidden = False
 
         self.last_action = action
         rand = (random.randint(1, 10)) / 10
@@ -360,16 +376,17 @@ class Tribute(Particle):
                         else:
                             goal.value -= (self.attributes['crafting_skill'])
         elif action.index == 8:  # hide
-            pass
+            ub = self.attributes['camouflage_skill']
+            if random.randrange(0, 11) < ub:
+                self.hidden = True
+
         elif action.index == 9:  # get water
             water_prob = loc.getWaterChance()
             for goal in self.goals:
                 if goal.name == "thirst":
                     if rand <= water_prob:
                         goal.value -= action.values[0]
-                        print 'drank'
-                    else:
-                        print 'didnt drink, prob: ', str(water_prob), ', draw: ', str(rand)
+
         elif action.index == 10:  # rest
             for goal in self.goals:
                 if goal.name == "rest":
@@ -487,8 +504,8 @@ class Tribute(Particle):
             self.goals[0].value -= foodProb * action.values[0]
         elif action.index == 5:  # kill
 
-            if abs(self.sighted.state[0] - self.state[0]) + abs(self.sighted.state[1] - self.state[1]) == 1:
-                self.goals[3].value = max(self.goals[3].value - action.values[0], 0)
+            if abs(self.sighted.state[0] - self.state[0]) + abs(self.sighted.state[1] - self.state[1]) <= 2:
+                self.goals[3].value = max(self.goals[3].value - action.values[0]*2, 0)
 
             if self.surmise_enemy_hit(self.sighted) > self.surmise_enemy_hit(self):
                 self.goals[7].value += 10
@@ -511,7 +528,7 @@ class Tribute(Particle):
             self.goals[5].value -= craftProb * action.values[0]
 
         elif action.index == 8:  # hide
-            pass
+            self.goals[7].modify_value(-(action.values[0] * (self.attributes['camouflage_skill'] / 10.0)))
         elif action.index == 9:  # get_water
             waterProb = loc.getWaterChance()
             self.goals[1].value -= waterProb * action.values[0]
@@ -530,6 +547,7 @@ class Tribute(Particle):
         elif action.index == 12:  # explore
             self.goals[0].value = max(self.goals[0].value - action.values[0], 0)
             self.goals[1].value = max(self.goals[1].value - action.values[1], 0)
+            self.goals[3].value = max(self.goals[1].value - action.values[2], 0)
 
     def calc_discomfort(self):
         val = 0

@@ -39,7 +39,7 @@ class GameEngine(object):
         getwater = Action([5], ["thirst"], 1, 9, (0, 0), 'get_water')
         rest = Action([5], ["rest"], 1, 10, (0, 0), 'rest')
         talkAlly = Action([5], ["ally"], 1, 11, (0, 0), 'talk_ally')
-        explore = Action([1, 1], ['multiple'], 1, 12, (0, 0), 'explore')
+        explore = Action([1, 1, 0.01], ['hunger', 'thirst', 'kill'], 1, 12, (0, 0), 'explore')
 
         #create actions (will be overwritten in a minute)
         hunger = Goal("hunger", 2)
@@ -127,7 +127,7 @@ class GameEngine(object):
                     print tribute.first_name, " ", tribute.last_name, " death by ", death
                     me.tributes.remove(tribute)
                     if me.curTrib == tribute and len(me.tributes) > 1:
-                        me.curTrib = me.tributes[random.randint(0,len(me.tributes))]
+                        me.curTrib = random.choice(me.tributes)
             if len(me.tributes) == 1:
                 me.PAUSED = True;
             me.view.render(me.state, me.curTrib, me.tributes_by_district, me.tributes, 0)
