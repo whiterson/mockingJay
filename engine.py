@@ -113,10 +113,15 @@ class GameEngine(object):
                     if (x,y) == tribute.state:
                         me.curTrib = tribute
         if not me.PAUSED:
-            for tribute in me.tributes:
-                me.gameMap[tribute.old_state[0]][tribute.old_state[1]].tribute = None
+            #for tribute in me.tributes:
+                #me.gameMap[tribute.old_state[0]][tribute.old_state[1]].tribute = None
+            for x in range(50):
+                for y in range(50):
+                    me.gameMap[x][y].tribute = None
 
             for tribute in me.tributes:
+                if me.gameMap[tribute.state[0]][tribute.state[1]].tribute is not None:
+                    raise StandardError('Two tribs, one cell. This should NOT happen!')
                 me.gameMap[tribute.state[0]][tribute.state[1]].tribute = tribute
 
             for tribute in me.tributes:
