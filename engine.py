@@ -127,7 +127,7 @@ class GameEngine(object):
                     print tribute.first_name, " ", tribute.last_name, " death by ", death
                     me.tributes.remove(tribute)
                     if me.curTrib == tribute and len(me.tributes) > 1:
-                        me.curTrib = me.tributes[random.randint(0,len(me.tributes))]
+                        me.curTrib = random.choice(me.tributes)
             if len(me.tributes) == 1:
                 me.PAUSED = True;
             me.view.render(me.state, me.curTrib, me.tributes_by_district, me.tributes, 0)

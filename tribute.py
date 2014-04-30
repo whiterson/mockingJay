@@ -50,6 +50,7 @@ class Tribute(Particle):
         self.opponent = None
         self.last_opponent = None
         self.sighted = None
+        self.last_sighted_location = None
         self.last_action = None
         self.old_state = self.state
         self.visited_set = set()
@@ -125,6 +126,7 @@ class Tribute(Particle):
         n.explore_point = self.explore_point
         n.explore_point_index = self.explore_point_index
         n.hidden = self.hidden
+        n.last_sighted_location = self.last_sighted_location
         return n
 
     def __repr__(self):
@@ -140,7 +142,8 @@ class Tribute(Particle):
             print str(self) + ' is engaging in combat with ' + str(t) + '!'
         elif self.fighting_state == FIGHT_STATE['fleeing']:
             self.opponent = t
-            t.engage_in_combat(self)
+            if self.opponent.fighting_state != FIGHT_STATE['fleeing']:
+                t.engage_in_combat(self)
             print str(self) + ' is being chased by ' + str(t) + '!'
 
     def disengage_in_combat(self, t):
@@ -221,12 +224,19 @@ class Tribute(Particle):
             actions = self.actions
 
             self.sighted = self.enemy_in_range(game_state)
+            if self.sighted:
+                self.last_sighted_location = self.sighted.state
 
             if self.sighted and not self.sighted.killed:
                 actions = self.actions + [self.fight_action]
 
-            if self.goals[0].value > 90 or self.goals[1].value > 50 or self.goals[3].value > 200:
+            if self.goals[0].value > 90 or self.goals[1].value > 50:
                 actions = self.actions + [self.explore_action]
+            elif self.goals[3].value > 200:
+                actions = self.actions + [self.explore_action]
+                if self.last_sighted_location:
+                    self.explore_point = self.last_sighted_location
+
 
             for a in actions:
                 t = copy.deepcopy(self)
@@ -478,8 +488,8 @@ class Tribute(Particle):
             self.goals[0].value -= foodProb * action.values[0]
         elif action.index == 5:  # kill
 
-            if abs(self.sighted.state[0] - self.state[0]) + abs(self.sighted.state[1] - self.state[1]) == 1:
-                self.goals[3].value = max(self.goals[3].value - action.values[0], 0)
+            if abs(self.sighted.state[0] - self.state[0]) + abs(self.sighted.state[1] - self.state[1]) <= 2:
+                self.goals[3].value = max(self.goals[3].value - action.values[0]*2, 0)
 
             if self.surmise_enemy_hit(self.sighted) > self.surmise_enemy_hit(self):
                 self.goals[7].value += 10
