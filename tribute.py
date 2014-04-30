@@ -434,18 +434,19 @@ class Tribute(Particle):
             evals = []
 
             for i, direction in enumerate(directions):
-                evals.append((mapReader.l1_dist(direction, self.explore_point), direction, i))
-
-            direction = min(evals, key=lambda x: x[0] + random.random() / 1000)  # rand is for breaking ties
-            if mapReader.l1_dist(self.explore_point, direction[1]) < 3:
-                if self.goals[3].value > FIGHT_EMERGENCY_CUTOFF:
-                    self.explore_point = (self.explore_point[0] + random.randrange(0, 8),
-                                          self.explore_point[1] + random.randrange(0, 8))
-                else:
-                    self.explore_point_index = (self.explore_point_index + 1) % len(NAVIGATION_POINTS)
-                    self.explore_point = NAVIGATION_POINTS[self.explore_point_index]
+                if game_map[direction[0]][direction[1]].tribute is None:
+                    evals.append((mapReader.l1_dist(direction, self.explore_point), direction, i))
+            if len(evals) > 0:
+                direction = min(evals, key=lambda x: x[0] + random.random() / 1000)  # rand is for breaking ties
+                if mapReader.l1_dist(self.explore_point, direction[1]) < 3:
+                    if self.goals[3].value > FIGHT_EMERGENCY_CUTOFF:
+                        self.explore_point = (self.explore_point[0] + U(0, 16),
+                                              self.explore_point[1] + U(0, 16))
+                    else:
+                        self.explore_point_index = (self.explore_point_index + 1) % len(NAVIGATION_POINTS)
+                        self.explore_point = NAVIGATION_POINTS[self.explore_point_index]
             ##print 'exploring!!'
-            self.state = direction[1]
+                self.state = direction[1]
 
 
 
@@ -559,10 +560,9 @@ class Tribute(Particle):
                (gameMap[x][(y - 1) % h].tribute is not None and gameMap[x][(y - 1) % h].tribute not in self.allies):
                 self.goals[6].value -= action.values[0]
         elif action.index == 12:  # explore
-            if self.goals[3].value < FIGHT_EMERGENCY_CUTOFF:
-                self.goals[0].value = max(self.goals[0].value - action.values[0], 0)
-                self.goals[1].value = max(self.goals[1].value - action.values[1], 0)
-            self.goals[3].value = max(self.goals[1].value - action.values[2], 0)
+            self.goals[0].value = max(self.goals[0].value - action.values[0], 0)
+            self.goals[1].value = max(self.goals[1].value - action.values[1], 0)
+            self.goals[3].value = max(self.goals[1].value - action.values[2]/2, 0)
 
         distance_after = 1
         if self.last_opponent and self.fighting_state == FIGHT_STATE['fleeing']:
