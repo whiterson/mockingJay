@@ -353,6 +353,7 @@ class Tribute(Particle):
         if action.index >= 0 and action.index <= 3:  # moving so don't know what gonna do here
             loc.setTribute(None)
             self.old_state = self.state
+            (game_map[self.state[0]][self.state[1]]).setTribute(None)
             self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.map_dims[0],
                 (self.state[1] + action.delta_state[1]) % engine.GameEngine.map_dims[1])
             (game_map[self.state[0]][self.state[1]]).setTribute(self)
