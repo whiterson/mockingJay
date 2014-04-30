@@ -98,6 +98,8 @@ class GameEngine(object):
         @return: None
         """
         me = GameEngine
+        buttons = me.view.getButtons()
+        names = me.view.getNames()
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_q:
@@ -112,6 +114,15 @@ class GameEngine(object):
                 for tribute in me.tributes:
                     if (x,y) == tribute.state:
                         me.curTrib = tribute
+                    else:
+                        namePos = 0
+                        for button in buttons:
+                            if button.collidepoint(pos):
+                                for tribute in me.tributes:
+                                    if tribute.first_name == names[namePos]:
+                                        me.curTrib = tribute
+                            namePos += 1
+
         if not me.PAUSED:
             for tribute in me.tributes:
                 me.gameMap[tribute.old_state[0]][tribute.old_state[1]].tribute = None

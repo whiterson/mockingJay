@@ -52,6 +52,7 @@ class Tribute(Particle):
         self.sighted = None
         self.last_sighted_location = None
         self.last_action = None
+        self.printy_action = 'none'
         self.old_state = self.state
         self.visited_set = set()
         self.explore_point_index = 0
@@ -119,6 +120,7 @@ class Tribute(Particle):
         n.opponent = self.opponent
         n.sighted = self.sighted
         n.last_action = self.last_action
+        n.printy_action = self.printy_action
         n.last_opponent = self.last_opponent
         n.bestScavChoice = self.bestScavChoice
         n.bestScavPoints = self.bestScavPoints
@@ -283,6 +285,7 @@ class Tribute(Particle):
             print str(self), ' cannot find ', str(self.opponent)
 
         self.last_action = action_name
+        self.printy_action = action_name
         damage = 0
         # with weapon 1d6 damage + 1d(str/2) + 1
         if self.has_weapon:
@@ -334,6 +337,7 @@ class Tribute(Particle):
         self.hidden = False
 
         self.last_action = action
+        self.printy_action = action.description
         rand = (random.randint(1, 10)) / 10
         loc = game_map[self.state[0]][self.state[1]]
         if action.index >= 0 and action.index <= 3:  # moving so don't know what gonna do here

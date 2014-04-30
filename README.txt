@@ -24,3 +24,5 @@ CONTROLS:
 - Press q to pause game
 - Press q to unpause game
 
+END OF GAME:
+When you get down to the last tribute, the winner will be announced at the bottom of the screen.
