@@ -7,5 +7,7 @@
     "get_water": 5,
     "rest": 20,
     "talk_ally": 5,
-    "explore": [3, 3, 4]
+    "explore": [3, 3, 4],
+
+    "fight_messages": false
 }

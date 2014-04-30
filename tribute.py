@@ -146,20 +146,24 @@ class Tribute(Particle):
             self.opponent = t
             self.last_opponent = self.opponent
             t.engage_in_combat(self)
-            ##print str(self) + ' is engaging in combat with ' + str(t) + '!'
+            if engine.GameEngine.FIGHT_MESSAGES:
+                print str(self) + ' is engaging in combat with ' + str(t) + '!'
         elif self.fighting_state == FIGHT_STATE['fleeing']:
             self.opponent = t
 
             if self.opponent.fighting_state != FIGHT_STATE['fleeing']:
                 t.engage_in_combat(self)
-            print str(self) + ' is being chased by ' + str(t) + '!'
+
+            if engine.GameEngine.FIGHT_MESSAGES:
+                print str(self) + ' is being chased by ' + str(t) + '!'
 
     def disengage_in_combat(self, t):
         if self.fighting_state != FIGHT_STATE['not_fighting']:
             self.fighting_state = FIGHT_STATE['not_fighting']
             self.opponent = None
             t.disengage_in_combat(self)
-            ##print str(self) + ' is disengaging in combat with ' + str(t) + '!'
+            if engine.GameEngine.FIGHT_MESSAGES:
+                print str(self) + ' is disengaging in combat with ' + str(t) + '!'
 
     def surmise_enemy_hit(self, tribute):
         """
@@ -194,14 +198,17 @@ class Tribute(Particle):
         return None
 
     def hurt(self, damage, place):
-        ##print str(self) + ' was hit in the ' + place + ' for ' + str(damage) + ' damage'
+        if engine.GameEngine.FIGHT_MESSAGES:
+            print str(self) + ' was hit in the ' + place + ' for ' + str(damage) + ' damage'
+
         self.goals[3].modify_value(-3)
         self.stats['health'] -= damage
         self.goals[7].value += damage*10
         if self.stats['health'] <= 0:
             self.killed = True
             self.killedBy = self.opponent
-            ##print str(self) + ' was killed by ' + str(self.killedBy)
+            if engine.GameEngine.FIGHT_MESSAGES:
+                print str(self) + ' was killed by ' + str(self.killedBy)
             self.disengage_in_combat((self.opponent or self.killedBy or self.last_opponent))
 
     #Need to figure out exactly how far
@@ -290,6 +297,10 @@ class Tribute(Particle):
             self.do_fight_action(best_action)
 
     def do_fight_action(self, action_name):
+
+        if self.opponent and mapReader.l1_dist(self.state, self.opponent.state) > 2:
+            return
+
         if self.opponent.killed:
             self.disengage_in_combat(self.opponent)
             return

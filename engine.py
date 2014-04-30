@@ -23,6 +23,7 @@ class GameEngine(object):
     curTrib = None
     tributes_by_district = []
     map_dims = []
+    FIGHT_MESSAGES = False
     @staticmethod
     def start():
         me = GameEngine
@@ -41,7 +42,7 @@ class GameEngine(object):
         rest = Action([d['rest']], ["rest"], 1, 10, (0, 0), 'rest')
         talkAlly = Action([d['talk_ally']], ["ally"], 1, 11, (0, 0), 'talk_ally')
         explore = Action(d['explore'], ['hunger', 'thirst', 'kill'], 1, 12, (0, 0), 'explore')
-
+        me.FIGHT_MESSAGES = d['fight_messages']
         #create actions (will be overwritten in a minute)
         hunger = Goal("hunger", 2)
         thirst = Goal("thirst", 2)
