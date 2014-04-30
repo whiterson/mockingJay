@@ -1,0 +1,11 @@
+{
+    "hunt": 19,
+    "fight": 5,
+    "scavenge": 3,
+    "craft": 4,
+    "hide": 5,
+    "get_water": 5,
+    "rest": 20,
+    "talk_ally": 5,
+    "explore": [3, 3, 4]
+}

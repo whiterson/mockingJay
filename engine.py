@@ -10,6 +10,7 @@ from goal import Goal
 from mapReader import readMap
 from random import randint
 from pygame.locals import *
+import json
 
 class GameEngine(object):
     """
@@ -25,21 +26,21 @@ class GameEngine(object):
     @staticmethod
     def start():
         me = GameEngine
-
+        d = json.load(open('./distributions/action_values.json'))
         #create actions (will be overwritten in a minute)
         move_up = Action([], '', 1, 0, (0, -1), 'move_up')
         move_down = Action([], '', 1, 1, (0, 1), 'move_down')
         move_right = Action([], '', 1, 2, (1, 0), 'move_right')
         move_left = Action([], '', 1, 3, (-1, 0), 'move_left')
-        hunt = Action([5], ["hunger"], 1, 4,(0, 0), 'hunt')
-        fight = Action([5], ["kill"], 1, 5, (0, 0), 'fight')
-        scavenge = Action([3], ["getweapon"], 1, 6, (0, 0), 'scavenge')
-        craft = Action([4], ["getweapon"], 1, 7, (0, 0), 'craft')
-        hide = Action([5], ["hide"], 1, 8, (0, 0), 'hide')
-        getwater = Action([5], ["thirst"], 1, 9, (0, 0), 'get_water')
-        rest = Action([5], ["rest"], 1, 10, (0, 0), 'rest')
-        talkAlly = Action([5], ["ally"], 1, 11, (0, 0), 'talk_ally')
-        explore = Action([1, 1, 0.01], ['hunger', 'thirst', 'kill'], 1, 12, (0, 0), 'explore')
+        hunt = Action([d['hunt']], ["hunger"], 1, 4,(0, 0), 'hunt')
+        fight = Action([d['fight']], ["kill"], 1, 5, (0, 0), 'fight')
+        scavenge = Action([d['scavenge']], ["getweapon"], 1, 6, (0, 0), 'scavenge')
+        craft = Action([d['craft']], ["getweapon"], 1, 7, (0, 0), 'craft')
+        hide = Action([d['hide']], ["hide"], 1, 8, (0, 0), 'hide')
+        getwater = Action([d['get_water']], ["thirst"], 1, 9, (0, 0), 'get_water')
+        rest = Action([d['rest']], ["rest"], 1, 10, (0, 0), 'rest')
+        talkAlly = Action([d['talk_ally']], ["ally"], 1, 11, (0, 0), 'talk_ally')
+        explore = Action(d['explore'], ['hunger', 'thirst', 'kill'], 1, 12, (0, 0), 'explore')
 
         #create actions (will be overwritten in a minute)
         hunger = Goal("hunger", 2)
@@ -124,8 +125,11 @@ class GameEngine(object):
                             namePos += 1
 
         if not me.PAUSED:
-            for tribute in me.tributes:
-                me.gameMap[tribute.old_state[0]][tribute.old_state[1]].tribute = None
+            #for tribute in me.tributes:
+                #me.gameMap[tribute.old_state[0]][tribute.old_state[1]].tribute = None
+            for x in range(50):
+                for y in range(50):
+                    me.gameMap[x][y].tribute = None
 
             for tribute in me.tributes:
                 me.gameMap[tribute.state[0]][tribute.state[1]].tribute = tribute

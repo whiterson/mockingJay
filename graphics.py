@@ -109,6 +109,11 @@ class GameView(object):
         for i, goal in enumerate(tribute.goals):
             self.screen.blit(fontobject.render(goal.name + ': ' + ('%.2f' % goal.value), 1, (255, 255, 255)), (510 + 140 * (i % 2), 385 + (35 * (i / 2))))
 
+        pos = (510, 385 + (35 * ((i + 1) / 2)))
+        self.screen.blit(fontobject.render('Sighted: ' + str(tribute.sighted), 1, (255, 255, 255)), pos)
+
+
+
     def drawWinner(self, tribute):
         trib = tribute
         fontobject = pygame.font.SysFont('Arial', 18)

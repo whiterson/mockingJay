@@ -15,7 +15,7 @@ class Particle(object):
 
 FIGHT_STATE = {'not_fighting': 0, 'fleeing': 1, 'fighting': 2}
 NAVIGATION_POINTS = [(25, 25), (5, 5), (45, 5), (45, 45), (5, 45)]
-
+FIGHT_EMERGENCY_CUTOFF = 80
 
 class Tribute(Particle):
     #Goals = list of goals for tribute
@@ -29,9 +29,11 @@ class Tribute(Particle):
     # water
     # rest
     # talk
+    ID_COUNTER = 0
     def __init__(self, goals, actions, x=0, y=0, district='d12', gender='male', do_not_load=False):
         Particle.__init__(self, (x, y), 1, 1)
-
+        self.id = Tribute.ID_COUNTER
+        Tribute.ID_COUNTER += 1
         self.goals = goals
         self.actions = actions
 
@@ -131,6 +133,7 @@ class Tribute(Particle):
         n.wepCanCraft = self.wepCanCraft
         n.hidden = self.hidden
         n.last_sighted_location = self.last_sighted_location
+        n.id = self.id
         return n
 
     def __repr__(self):
@@ -188,11 +191,13 @@ class Tribute(Particle):
             d = abs(t[0] - self.state[0]) + abs(t[1] - self.state[1])
             if 0 < d < 5 and p not in self.allies:
                 return p
+        return None
 
     def hurt(self, damage, place):
         ##print str(self) + ' was hit in the ' + place + ' for ' + str(damage) + ' damage'
+        self.goals[3].modify_value(-3)
         self.stats['health'] -= damage
-        self.goals[7].value += damage
+        self.goals[7].value += damage*10
         if self.stats['health'] <= 0:
             self.killed = True
             self.killedBy = self.opponent
@@ -216,7 +221,7 @@ class Tribute(Particle):
         return min_val
 
     def decide_fight_move(self, game_map):
-        if self.goals[7].value < random.randrange(5, 20):
+        if self.goals[7].value < random.randrange(105, 150):
             actions = ['attack_head', 'attack_chest', 'attack_gut', 'attack_legs']
             return random.choice(actions)
         else:
@@ -237,13 +242,22 @@ class Tribute(Particle):
 
             if self.goals[0].value > 90 or self.goals[1].value > 50:
                 actions = self.actions + [self.explore_action]
-            elif self.goals[3].value > 200:
+                self.explore_point = NAVIGATION_POINTS[self.explore_point_index]
+            elif self.goals[3].value > FIGHT_EMERGENCY_CUTOFF and not self.sighted:
                 actions = self.actions + [self.explore_action]
                 if self.last_sighted_location:
                     self.explore_point = self.last_sighted_location
 
+            neighbors = mapReader.get_neighbors2(gameMap, self.state)
+            forbidden_states = []
+            for trib in engine.GameEngine.tributes:
+                if trib.state in neighbors and trib.id != self.id:
+                    forbidden_states.append(trib.state)
 
             for a in actions:
+                n_pos = mapReader.add_states(self.state, a.delta_state)
+                if n_pos in forbidden_states:
+                    continue
                 t = copy.deepcopy(self)
                 t.apply_action(a, gameMap)
                 v = t.calc_min_discomfort(0, 2, gameMap, actions)
@@ -275,11 +289,12 @@ class Tribute(Particle):
             best_action = self.decide_fight_move(gameMap)
             self.do_fight_action(best_action)
 
-
     def do_fight_action(self, action_name):
         if self.opponent.killed:
             self.disengage_in_combat(self.opponent)
             return
+
+        self.goals[3].modify_value(-1)
 
         if self.opponent.hidden:
             print str(self), ' cannot find ', str(self.opponent)
@@ -289,7 +304,7 @@ class Tribute(Particle):
         damage = 0
         # with weapon 1d6 damage + 1d(str/2) + 1
         if self.has_weapon:
-            damage = self.weapon.damage + random.randrange(1, self.attributes['strength'] / 4) + random.randint(0, self.attributes['weapon_skill']/2)+ 1
+            damage = self.weapon.damage + random.randrange(1, (self.attributes['strength'] / 4) + 2) + random.randint(0, self.attributes['weapon_skill']/2 + 1)+ 1
         else:  # without, 1d2 damage + 1d(str)
             damage = random.randrange(1, 3) + random.randrange(1, self.attributes['strength'] + 1)
         draw = random.random()
@@ -343,6 +358,7 @@ class Tribute(Particle):
         if action.index >= 0 and action.index <= 3:  # moving so don't know what gonna do here
             loc.setTribute(None)
             self.old_state = self.state
+            (game_map[self.state[0]][self.state[1]]).setTribute(None)
             self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.map_dims[0],
                 (self.state[1] + action.delta_state[1]) % engine.GameEngine.map_dims[1])
             (game_map[self.state[0]][self.state[1]]).setTribute(self)
@@ -407,7 +423,7 @@ class Tribute(Particle):
                    game_map[x][(y - 1) % h].tribute
             if not targ:
                 print 'No target for ally!'
-            elif targ not in self.allies:
+            elif targ not in self.allies and targ.id != self.id:
                 f2 = targ.attributes['friendliness']
                 a1 = self.attributes['district_prejudices'][targ.district]
                 a2 = targ.attributes['district_prejudices'][self.district]
@@ -423,14 +439,19 @@ class Tribute(Particle):
             evals = []
 
             for i, direction in enumerate(directions):
-                evals.append((mapReader.l1_dist(direction, self.explore_point), direction, i))
-
-            direction = min(evals, key=lambda x: x[0] + random.random() / 1000)  # rand is for breaking ties
-            if mapReader.l1_dist(self.explore_point, direction[1]) < 3:
-                self.explore_point_index = (self.explore_point_index + 1) % len(NAVIGATION_POINTS)
-                self.explore_point = NAVIGATION_POINTS[self.explore_point_index]
+                if game_map[direction[0]][direction[1]].tribute is None:
+                    evals.append((mapReader.l1_dist(direction, self.explore_point), direction, i))
+            if len(evals) > 0:
+                direction = min(evals, key=lambda x: x[0] + random.random() / 1000)  # rand is for breaking ties
+                if mapReader.l1_dist(self.explore_point, direction[1]) < 3:
+                    if self.goals[3].value > FIGHT_EMERGENCY_CUTOFF:
+                        self.explore_point = (self.explore_point[0] + U(0, 16),
+                                              self.explore_point[1] + U(0, 16))
+                    else:
+                        self.explore_point_index = (self.explore_point_index + 1) % len(NAVIGATION_POINTS)
+                        self.explore_point = NAVIGATION_POINTS[self.explore_point_index]
             ##print 'exploring!!'
-            self.state = direction[1]
+                self.state = direction[1]
 
 
 
@@ -470,11 +491,12 @@ class Tribute(Particle):
             if goal.name == 'rest':
                 goal.value += (1.0/self.attributes['stamina'] + self.goals[0].value/50.0 + self.goals[1].value/30.0)
             if goal.name == 'fear':
-                goal.value = max(goal.value - 0.1, 0)
+                goal.value = max(goal.value - 2.5, 0)
+                if goal.value < 30 and self.fighting_state == FIGHT_STATE['fleeing']:
+                    self.fighting_state = FIGHT_STATE['not_fighting']
             if goal.name == 'getweapon' and not self.has_weapon:
                 goal.value += 0.5
-                if goal.value < 4 and self.fighting_state == FIGHT_STATE['fleeing']:
-                    self.fighting_state = FIGHT_STATE['not_fighting']
+
             goal.value = max(goal.value, 0)
 
 
@@ -484,22 +506,16 @@ class Tribute(Particle):
     def apply_action(self, action, gameMap):
         # [hunger, thirst, rest, kill, hide, getweapon, ally, fear]
         loc = gameMap[self.state[0]][self.state[1]]
+
+        distance_before = 0
+        if self.last_opponent and self.fighting_state == FIGHT_STATE['fleeing']:
+            distance_before = abs(self.state[0] - self.last_opponent.state[0]) + \
+                              abs(self.state[1] + self.last_opponent.state[1])
+
         if 3 >= action.index >= 0:  # moving so don't know what gonna do here
-            distance_before = 0
-            if self.last_opponent and self.fighting_state == FIGHT_STATE['fleeing']:
-                distance_before = abs(self.state[0] - self.last_opponent.state[0]) + \
-                                  abs(self.state[1] + self.last_opponent.state[1])
             self.old_state = self.state
             self.state = ((self.state[0] + action.delta_state[0]) % engine.GameEngine.map_dims[0],
                           (self.state[1] + action.delta_state[1]) % engine.GameEngine.map_dims[1])
-
-            distance_after = 1
-            if self.last_opponent and self.fighting_state == FIGHT_STATE['fleeing']:
-                distance_after = abs(self.state[0] - self.last_opponent.state[0]) + \
-                                 abs(self.state[1] + self.last_opponent.state[1])
-
-            if distance_after <= distance_before:
-                self.goals[7].value += random.randrange(1, 10)
 
             g = random.choice(self.goals)
             g.value -= -0.5
@@ -509,14 +525,14 @@ class Tribute(Particle):
         elif action.index == 5:  # kill
 
             if abs(self.sighted.state[0] - self.state[0]) + abs(self.sighted.state[1] - self.state[1]) <= 2:
-                self.goals[3].value = max(self.goals[3].value - action.values[0]*2, 0)
+                self.goals[3].value = max(self.goals[3].value - action.values[0]*10, 0)
 
             if self.surmise_enemy_hit(self.sighted) > self.surmise_enemy_hit(self):
-                self.goals[7].value += 10
+                self.goals[7].value += 5
             if self.surmise_escape_turns(self.sighted) < 5:
-                self.goals[7].value += 10
+                self.goals[7].value += 5
             weakness = self.surmise_enemy_weakness(self.sighted)
-            self.goals[7].value -= weakness
+            # self.goals[7].value -= weakness
             if weakness < 1:
                 self.goals[7].value -= 11
 
@@ -552,6 +568,14 @@ class Tribute(Particle):
             self.goals[0].value = max(self.goals[0].value - action.values[0], 0)
             self.goals[1].value = max(self.goals[1].value - action.values[1], 0)
             self.goals[3].value = max(self.goals[1].value - action.values[2], 0)
+
+        distance_after = 1
+        if self.last_opponent and self.fighting_state == FIGHT_STATE['fleeing']:
+            distance_after = abs(self.state[0] - self.last_opponent.state[0]) + \
+                             abs(self.state[1] + self.last_opponent.state[1])
+
+        if distance_after <= distance_before and self.fighting_state == FIGHT_STATE['fleeing']:
+            self.goals[7].value += 100
 
     def calc_discomfort(self):
         val = 0
