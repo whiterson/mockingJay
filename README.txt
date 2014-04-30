@@ -24,6 +24,9 @@ CONTROLS:
 - OR Click on their name in the bottom left (admittedly, this function is a little buggy
 - Press q to pause game
 - Press q to unpause game
+- Press w to give the currently selected tribute a weapon
+- Press f to give the currently selected tribute some food
+- Press d to give the currently selected tribute some water/a drink
 
 TO CHOOSE A DIFFERENT MAP:
 - Look at the maps in the map file and pick one.

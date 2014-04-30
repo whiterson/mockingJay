@@ -105,6 +105,14 @@ class GameEngine(object):
             if event.type == KEYDOWN:
                 if event.key == K_q:
                     me.PAUSED = not me.PAUSED
+                if event.key == K_f:
+                    me.curTrib.goals[0].modify_value(-10)
+                if event.key == K_d:
+                    me.curTrib.goals[1].modify_value(-10)
+                if event.key == K_w:
+                    me.curTrib.getWeapon()
+                    me.curTrib.goals[5].modify_value(-10)
+
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return False

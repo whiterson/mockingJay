@@ -605,7 +605,7 @@ class Tribute(Particle):
         else:
             return None
 
-    def getWeapon(self, game_map):
+    def getWeapon(self):
         self.has_weapon = True
         weaponType = random.randint(1, 10)
         self.weapon = weapon(self.weaponInfo.weaponType(weaponType))
