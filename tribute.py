@@ -189,6 +189,7 @@ class Tribute(Particle):
             d = abs(t[0] - self.state[0]) + abs(t[1] - self.state[1])
             if 0 < d < 5 and p not in self.allies:
                 return p
+        return None
 
     def hurt(self, damage, place):
         ##print str(self) + ' was hit in the ' + place + ' for ' + str(damage) + ' damage'
@@ -239,7 +240,8 @@ class Tribute(Particle):
 
             if self.goals[0].value > 90 or self.goals[1].value > 50:
                 actions = self.actions + [self.explore_action]
-            elif self.goals[3].value > FIGHT_EMERGENCY_CUTOFF:
+                self.explore_point = NAVIGATION_POINTS[self.explore_point_index]
+            elif self.goals[3].value > FIGHT_EMERGENCY_CUTOFF and not self.sighted:
                 actions = self.actions + [self.explore_action]
                 if self.last_sighted_location:
                     self.explore_point = self.last_sighted_location
@@ -300,7 +302,7 @@ class Tribute(Particle):
         damage = 0
         # with weapon 1d6 damage + 1d(str/2) + 1
         if self.has_weapon:
-            damage = self.weapon.damage + random.randrange(1, self.attributes['strength'] / 4) + random.randint(0, self.attributes['weapon_skill']/2)+ 1
+            damage = self.weapon.damage + random.randrange(1, (self.attributes['strength'] / 4) + 2) + random.randint(0, self.attributes['weapon_skill']/2 + 1)+ 1
         else:  # without, 1d2 damage + 1d(str)
             damage = random.randrange(1, 3) + random.randrange(1, self.attributes['strength'] + 1)
         draw = random.random()
@@ -519,8 +521,8 @@ class Tribute(Particle):
             self.goals[0].value -= foodProb * action.values[0]
         elif action.index == 5:  # kill
 
-            if abs(self.sighted.state[0] - self.state[0]) + abs(self.sighted.state[1] - self.state[1]) <= 2:
-                self.goals[3].value = max(self.goals[3].value - action.values[0]*3, 0)
+            if abs(self.sighted.state[0] - self.state[0]) + abs(self.sighted.state[1] - self.state[1]) <= 3:
+                self.goals[3].value = max(self.goals[3].value - action.values[0]*10, 0)
 
             if self.surmise_enemy_hit(self.sighted) > self.surmise_enemy_hit(self):
                 self.goals[7].value += 5
@@ -562,7 +564,7 @@ class Tribute(Particle):
         elif action.index == 12:  # explore
             self.goals[0].value = max(self.goals[0].value - action.values[0], 0)
             self.goals[1].value = max(self.goals[1].value - action.values[1], 0)
-            self.goals[3].value = max(self.goals[1].value - action.values[2]/2, 0)
+            self.goals[3].value = max(self.goals[1].value - action.values[2], 0)
 
         distance_after = 1
         if self.last_opponent and self.fighting_state == FIGHT_STATE['fleeing']:
