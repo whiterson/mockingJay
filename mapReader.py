@@ -483,5 +483,14 @@ def get_neighbors(map, location):
     return [up, left, down, right]
 
 
+def get_neighbors2(map, location):
+    w = len(map)
+    h = len(map[0])
+    up = (location[0], (location[1] - 1) % h)
+    left = ((location[0] - 1) % w, location[1])
+    down = (location[0], (location[1] + 1) % h)
+    right = ((location[0] + 1) % w, location[1])
+    return [up, down, right, left]
+
 def l1_dist(state1, state2):
     return abs(state1[0] - state2[0]) + abs(state1[1] - state2[1])
