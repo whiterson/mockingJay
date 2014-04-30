@@ -255,7 +255,6 @@ class Tribute(Particle):
             for a in actions:
                 n_pos = mapReader.add_states(self.state, a.delta_state)
                 if n_pos in forbidden_states:
-                    print 'Forbidden move'
                     continue
                 t = copy.deepcopy(self)
                 t.apply_action(a, gameMap)
@@ -521,7 +520,7 @@ class Tribute(Particle):
             self.goals[0].value -= foodProb * action.values[0]
         elif action.index == 5:  # kill
 
-            if abs(self.sighted.state[0] - self.state[0]) + abs(self.sighted.state[1] - self.state[1]) <= 3:
+            if abs(self.sighted.state[0] - self.state[0]) + abs(self.sighted.state[1] - self.state[1]) <= 2:
                 self.goals[3].value = max(self.goals[3].value - action.values[0]*10, 0)
 
             if self.surmise_enemy_hit(self.sighted) > self.surmise_enemy_hit(self):
