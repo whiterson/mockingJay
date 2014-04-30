@@ -120,8 +120,6 @@ class GameEngine(object):
                     me.gameMap[x][y].tribute = None
 
             for tribute in me.tributes:
-                if me.gameMap[tribute.state[0]][tribute.state[1]].tribute is not None:
-                    raise StandardError('Two tribs, one cell. This should NOT happen!')
                 me.gameMap[tribute.state[0]][tribute.state[1]].tribute = tribute
 
             for tribute in me.tributes:

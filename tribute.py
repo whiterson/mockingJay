@@ -245,12 +245,16 @@ class Tribute(Particle):
                     self.explore_point = self.last_sighted_location
 
             neighbors = mapReader.get_neighbors2(gameMap, self.state)
-            for index, pos in enumerate(neighbors):
-                if gameMap[pos[0]][pos[1]].tribute is not None:
-                    actions = actions[:index] + actions[(index + 1):]
-
+            forbidden_states = []
+            for trib in engine.GameEngine.tributes:
+                if trib.state in neighbors and trib.id != self.id:
+                    forbidden_states.append(trib.state)
 
             for a in actions:
+                n_pos = mapReader.add_states(self.state, a.delta_state)
+                if n_pos in forbidden_states:
+                    print 'Forbidden move'
+                    continue
                 t = copy.deepcopy(self)
                 t.apply_action(a, gameMap)
                 v = t.calc_min_discomfort(0, 2, gameMap, actions)
