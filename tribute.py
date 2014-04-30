@@ -324,10 +324,11 @@ class Tribute(Particle):
     def do_action(self, action, game_map):
 
         ##IF you can Craft a weapon, do it
-        for weapon in self.weaponInfo.weaponList:
-            if self.weaponInfo.canCraft(weapon, self.craftPouch):
-                action.index = 7
-                self.wepCanCraft = weapon
+        if(not self.has_weapon):
+            for weapon in self.weaponInfo.weaponList:
+                if self.weaponInfo.canCraft(weapon, self.craftPouch):
+                    action.index = 7
+                    self.wepCanCraft = weapon
 
 
         self.hidden = False
@@ -372,7 +373,7 @@ class Tribute(Particle):
                         ## Returns boolean if you did it or not
                         crafted = self.doCraftWeapon(game_map, self.wepCanCraft)
                         if crafted:
-                            goal.value -= action.values[0]
+                            goal.value = 0
                         else:
                             goal.value -= (self.attributes['crafting_skill'])
         elif action.index == 8:  # hide
