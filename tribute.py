@@ -457,7 +457,7 @@ class Tribute(Particle):
                 direction = min(evals, key=lambda x: x[0] + random.random() / 1000)  # rand is for breaking ties
                 if mapReader.l1_dist(self.explore_point, direction[1]) < 3:
                     if self.goals[3].value > FIGHT_EMERGENCY_CUTOFF:
-                        self.explore_point = (self.explore_point[0] + U(0, 16),
+                        self.last_sighted_location = (self.explore_point[0] + U(0, 16),
                                               self.explore_point[1] + U(0, 16))
                     else:
                         self.explore_point_index = (self.explore_point_index + 1) % len(NAVIGATION_POINTS)
