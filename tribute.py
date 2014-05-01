@@ -299,6 +299,7 @@ class Tribute(Particle):
     def do_fight_action(self, action_name):
 
         if self.opponent and mapReader.l1_dist(self.state, self.opponent.state) > 2:
+            self.disengage_in_combat(self.opponent)
             return
 
         if self.opponent.killed:
