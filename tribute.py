@@ -247,7 +247,7 @@ class Tribute(Particle):
             if self.sighted and not self.sighted.killed:
                 actions = self.actions + [self.fight_action]
 
-            if self.goals[0].value > 90 or self.goals[1].value > 50:
+            if self.goals[0].value > 90 or self.goals[1].value > 50 and self.sighted is None:
                 actions = self.actions + [self.explore_action]
                 self.explore_point = NAVIGATION_POINTS[self.explore_point_index]
             elif self.goals[3].value > FIGHT_EMERGENCY_CUTOFF and self.sighted is None:
